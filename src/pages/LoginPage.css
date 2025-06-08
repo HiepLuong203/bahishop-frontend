@@ -1,0 +1,149 @@
+/* src/pages/LoginPage.css */
+
+.log-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px); /* Lấy toàn bộ chiều cao viewport trừ đi chiều cao header/footer nếu có */
+  background-color: #f0f2f5;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.log-card {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px; /* Giới hạn chiều rộng tối đa của thẻ */
+  text-align: center;
+}
+
+.log-title {
+  font-size: 2.2em;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.log-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Khoảng cách giữa các nhóm form */
+}
+
+.log-form-group {
+  text-align: left;
+}
+
+.log-form-group label {
+  display: block;
+  font-size: 1em;
+  color: #555;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.log-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #333;
+  box-sizing: border-box; /* Đảm bảo padding và border không làm tăng kích thước */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.log-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.log-error-message {
+  color: #dc3545;
+  font-size: 0.95em;
+  margin-top: -10px; /* Giảm khoảng cách với input phía trên */
+  margin-bottom: 10px;
+  text-align: center;
+  background-color: #ffebeb;
+  border: 1px solid #dc3545;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.log-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 10px; /* Khoảng cách với phần tử phía trên */
+}
+
+.log-button:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.log-button:disabled {
+  background-color: #a0c9ed;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.log-register-link {
+  margin-top: 25px; /* Khoảng cách từ nút Đăng nhập */
+  font-size: 1em;
+  color: #666;
+}
+
+.log-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.log-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .log-card {
+    padding: 25px;
+    margin: 0 15px; /* Thêm margin ngang để tránh dính sát mép */
+  }
+
+  .log-title {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+  }
+
+  .log-form {
+    gap: 15px;
+  }
+
+  .log-input,
+  .log-button {
+    padding: 10px 12px;
+    font-size: 1em;
+  }
+
+  .log-error-message {
+    font-size: 0.9em;
+  }
+  
+  .log-register-link {
+    font-size: 0.95em;
+  }
+}

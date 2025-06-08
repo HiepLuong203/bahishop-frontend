@@ -1,0 +1,122 @@
+/* src/components/admin/ProductBatchDetailsModal.css */
+
+.pb-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.pb-details-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 550px;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.pb-details-title {
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 25px;
+  text-align: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.pb-details-section {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #eee;
+}
+
+.pb-details-section:last-of-type {
+  border-bottom: none;
+}
+
+.pb-details-section p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+  color: #495057;
+}
+
+.pb-details-section strong {
+  color: #343a40;
+}
+
+.pb-status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 0.9em;
+}
+
+.pb-status-badge.status-available {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.pb-status-badge.status-expired {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.pb-status-badge.status-quarantined {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.pb-status-badge.status-sold-out {
+  background-color: #e2e6ea;
+  color: #383d41;
+}
+
+.pb-details-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+}
+
+/* Base admin-button styles (assuming these are global) */
+.admin-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.admin-button.default {
+  background-color: #6c757d;
+  color: white;
+}
+
+.admin-button.default:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pb-details-content {
+    padding: 20px;
+    margin: 10px;
+  }
+  .pb-details-title {
+    font-size: 1.5em;
+  }
+}

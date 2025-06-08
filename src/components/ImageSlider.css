@@ -1,0 +1,85 @@
+.slider-wrapper {
+     position: relative; /* Để định vị tuyệt đối các dot bên trong */
+     width: 100%;
+     /* Chiều cao sẽ được xác định bởi image-slider-container và khoảng trống cho dot */
+     margin-top: 20px;
+     margin-bottom: 20px;
+   }
+   
+   .image-slider-container {
+     width: 100%;
+     height: 550px; /* Chiều cao mong muốn */
+     overflow: hidden;
+     padding-top: 25px;
+     position: relative; 
+   }
+   
+   .image-slider {
+     display: flex;
+     width: 100%;
+     height: 100%;
+     transition: transform 1.5s ease-in-out;
+   }
+   
+   .slide {
+     flex: 0 0 100%;
+     width: 100%;
+     height: 100%;
+   }
+   
+   .slide img {
+     display: block;
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+   }
+   
+   .slider-control {
+     position: absolute;
+     top: 50%;
+     transform: translateY(-50%);
+     background: rgba(0, 0, 0, 0.5);
+     color: white;
+     border: none;
+     padding: 10px;
+     cursor: pointer;
+     z-index: 10;
+     opacity: 0.7;
+     transition: opacity 0.3s ease;
+   }
+   
+   .slider-control:hover {
+     opacity: 1;
+   }
+   
+   .slider-control.prev {
+     left: 10px;
+   }
+   
+   .slider-control.next {
+     right: 10px;
+   }
+   
+   /* Di chuyển slider-dots ra khỏi image-slider-container */
+   .slider-dots {
+     position: absolute;
+     bottom: 10px; /* Đặt xuống dưới */
+     left: 50%;
+     transform: translateX(-50%);
+     display: flex;
+     gap: 8px;
+     z-index: 10;
+     width: auto; /* Chỉ chiếm độ rộng cần thiết */
+   }
+   
+   .slider-dots .dot {
+     width: 10px;
+     height: 10px;
+     border-radius: 50%;
+     background-color: rgba(0, 0, 0, 0.5);
+     cursor: pointer;
+   }
+   
+   .slider-dots .dot.active {
+     background-color: rgba(0, 0, 0, 0.9);
+   }

@@ -1,0 +1,93 @@
+/* src/pages/admin/AdminPromotionsPage.css */
+.admin-promotions-page {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.admin-promotions-page h1 {
+  color: #343a40;
+  margin-bottom: 20px;
+}
+
+.admin-promotions-actions {
+  margin-bottom: 20px;
+}
+
+.admin-promotions-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-promotions-table th,
+.admin-promotions-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.admin-promotions-table th {
+  background-color: #343a40;
+  color: white;
+  font-weight: bold;
+}
+
+.admin-promotions-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.admin-promotions-table tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+.actions-cell button {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+/* Reusing admin-button styles - ensure these are defined elsewhere or in a global CSS */
+.admin-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.admin-button.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.admin-button.primary:hover {
+  background-color: #0056b3;
+}
+
+.admin-button.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.admin-button.secondary:hover {
+  background-color: #545b62;
+}
+
+.admin-button.danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.admin-button.danger:hover {
+  background-color: #c82333;
+}
+
+.admin-button.small {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}

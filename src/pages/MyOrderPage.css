@@ -1,0 +1,304 @@
+/* MyOrderPage.css */
+
+/* Container chung với margin 200px trái phải */
+.myorders-container {
+  padding: 20px;
+  background-color: #f5f5f5; /* Nền cho toàn bộ khu vực content */
+  margin-left: 200px;
+  margin-right: 200px;
+  max-width: calc(100vw - 400px); /* Đảm bảo không tràn màn hình */
+  box-sizing: border-box;
+}
+
+/* Các styles cho thông báo tải, lỗi, thành công và không có đơn hàng */
+.my-orders-loading-text {
+  text-align: center;
+  padding: 50px 20px;
+  font-size: 1.2em;
+  color: #555;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.my-orders-error-alert,
+.my-orders-success-alert {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 600px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.my-orders-error-alert {
+  background-color: #ffebeb;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+}
+
+.my-orders-success-alert {
+  background-color: #e6ffe6;
+  border: 1px solid #28a745;
+  color: #28a745;
+}
+
+.my-orders-error-icon,
+.my-orders-success-icon {
+  font-size: 2.5em;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.my-orders-error-content {
+  flex-grow: 1;
+}
+
+.my-orders-error-title,
+.my-orders-success-title {
+  font-size: 1.8em;
+  margin-bottom: 5px;
+}
+
+.my-orders-error-description,
+.my-orders-success-description {
+  font-size: 1em;
+}
+
+.my-orders-no-orders-message {
+  text-align: center;
+  padding: 50px 20px;
+  font-size: 1.2em;
+  color: #666;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.my-orders-no-orders-message a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.my-orders-no-orders-message a:hover {
+  text-decoration: underline;
+}
+
+
+/* Layout chính của trang đơn hàng */
+.my-orders-page {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.my-orders-title {
+  text-align: center;
+  font-size: 2.5em;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+/* Bảng đơn hàng */
+.my-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  table-layout: fixed;
+}
+
+.my-orders-thead {
+  background-color: #f2f2f2;
+}
+
+/* Căn giữa cho các cột tiêu đề */
+.my-orders-header-cell {
+  padding: 15px;
+  border: 1px solid #ddd;
+  text-align: center; /* Căn giữa cho tiêu đề cột */
+  font-weight: 600;
+  color: #555;
+}
+
+.my-orders-row {
+  border-bottom: 1px solid #eee;
+}
+
+.my-orders-row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Căn trái cho các ô dữ liệu */
+.my-orders-cell {
+  padding: 15px;
+  border: 1px solid #eee;
+  vertical-align: top;
+  text-align: left; /* Căn trái cho dữ liệu */
+}
+
+/* Riêng cột 'Hành động' sẽ căn giữa lại nội dung bên trong nó */
+.my-orders-cell:last-child {
+    text-align: center; /* Căn giữa cho cột hành động */
+}
+
+
+/* Sản phẩm trong đơn hàng */
+.my-orders-item {
+  margin-bottom: 5px;
+  font-size: 0.95em;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Badge trạng thái đơn hàng */
+.order-status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 0.9em;
+  text-transform: capitalize;
+  text-align: left;
+}
+
+/* Biến thể màu sắc cho badge */
+.order-status-badge.secondary {
+  color: #000000;
+}
+
+.order-status-badge.default {
+  color: #000000;
+}
+
+.order-status-badge.success {
+  color: #000000;
+}
+
+.order-status-badge.destructive {
+  color: #000000;
+}
+
+.order-status-badge.outline {
+  background-color: #f8f9fa; /* Màu xám nhạt */
+  color: #6c757d;
+  border: 1px solid #6c757d;
+}
+
+/* Nút hủy đơn hàng */
+.my-orders-cancel-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.my-orders-cancel-button:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.my-orders-cancel-button:disabled {
+  background-color: #e0a8a8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.my-orders-review-button {
+  padding: 8px 15px;
+  background-color: #28a745; /* Màu xanh lá cây */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  margin-left: 10px; /* Khoảng cách với tên sản phẩm */
+}
+
+.my-orders-review-button:hover {
+  background-color: #218838;
+}
+.my-orders-status-na {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+/* Nút tiếp tục mua hàng */
+.my-orders-continue-shopping-button {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.my-orders-continue-shopping-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .cp-container {
+    margin-left: 50px;
+    margin-right: 50px;
+    max-width: calc(100vw - 100px);
+  }
+}
+
+@media (max-width: 768px) {
+  .cp-container {
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: calc(100vw - 20px);
+    padding: 10px;
+  }
+
+  .my-orders-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+  .my-orders-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .my-orders-header-cell,
+  .my-orders-cell {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  /* Điều chỉnh kích thước icon và text trong alert */
+  .my-orders-error-icon,
+  .my-orders-success-icon {
+    font-size: 2em;
+  }
+
+  .my-orders-error-title,
+  .my-orders-success-title {
+    font-size: 1.5em;
+  }
+
+  .my-orders-error-description,
+  .my-orders-success-description {
+    font-size: 0.9em;
+  }
+}

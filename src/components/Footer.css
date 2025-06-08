@@ -1,0 +1,57 @@
+/* Các style footer hiện tại */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column; /* Thay đổi hướng flex thành cột */
+  align-items: center; /* Căn giữa các phần tử theo chiều ngang */
+}
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Đảm bảo trang có chiều cao ít nhất bằng viewport */
+  margin: 0; /* Loại bỏ margin mặc định của body */
+}
+.footer-top {
+  display: flex;
+  justify-content: space-around;
+  width: 100%; /* Để các phần tử con có thể dàn đều */
+  margin-bottom: 20px; /* Khoảng cách giữa phần trên và bản quyền */
+}
+
+.footer-info,
+.footer-social {
+  text-align: center;
+}
+
+.footer-info h3,
+.footer-social h3 {
+  margin-bottom: 10px;
+}
+
+.footer-info p,
+.footer-social p {
+  margin: 5px 0;
+}
+
+.footer-social a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-social a:hover {
+  text-decoration: underline;
+}
+
+.footer-copyright {
+  text-align: center;
+  width: 100%;
+  padding-top: 10px;
+  border-top: 1px solid #555; /* Thêm một đường kẻ ngang cho đẹp */
+}
+ 
+.content {
+  flex: 1; /* Đẩy phần nội dung chính lên, để lại không gian cho footer */
+}

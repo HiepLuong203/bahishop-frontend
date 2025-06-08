@@ -1,0 +1,47 @@
+.admin-layout {
+     display: flex;
+     min-height: 100vh;
+   }
+   
+   .admin-sidebar {
+     background-color: #f8f9fa;
+     padding: 20px;
+     width: 250px;
+     border-right: 1px solid #eee;
+   }
+   
+   .admin-sidebar h2 {
+     margin-top: 0;
+     margin-bottom: 20px;
+     text-align: center;
+   }
+   
+   .admin-sidebar ul {
+     list-style: none;
+     padding: 0;
+     margin: 0;
+   }
+   
+   .admin-sidebar li {
+     margin-bottom: 10px;
+   }
+   
+   .sidebar-link {
+     display: block;
+     padding: 10px 15px;
+     text-decoration: none;
+     color: #333;
+     border-radius: 5px;
+   }
+   
+   .sidebar-link:hover {
+     background-color: #ffffff;
+   }
+   .sidebar-link.active {
+    background-color: #e9ecef; /* Màu xám nhạt */
+    font-weight: bold; /* Tùy chọn: làm đậm chữ */
+  }
+   .admin-content {
+     flex-grow: 1;
+     padding: 20px;
+   }

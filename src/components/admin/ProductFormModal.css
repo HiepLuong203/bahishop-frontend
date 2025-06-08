@@ -1,0 +1,142 @@
+/* src/components/admin/ProductFormModal.css */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh; /* Giới hạn chiều cao để có thể cuộn */
+  overflow-y: auto; /* Cho phép cuộn nếu nội dung dài */
+  position: relative;
+}
+
+.modal-content h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group textarea,
+.form-group select {
+  width: calc(100% - 20px); /* Trừ padding */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng width */
+}
+
+.form-group textarea {
+  resize: vertical; /* Cho phép thay đổi kích thước theo chiều dọc */
+}
+
+.form-group input[type="file"] {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.image-preview {
+  display: block;
+  margin-top: 10px;
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 5px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  margin-bottom: 0;
+  font-weight: normal;
+  color: #333;
+}
+
+.form-error {
+  color: #dc3545;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.admin-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.admin-button.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.admin-button.primary:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.admin-button.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.admin-button.secondary:hover:not(:disabled) {
+  background-color: #545b62;
+}
+
+.admin-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

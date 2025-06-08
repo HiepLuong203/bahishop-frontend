@@ -1,0 +1,167 @@
+/* src/components/admin/PurchaseOrderDetailsModal.css */
+
+.po-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px; /* Thêm padding cho mobile */
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+}
+
+.po-details-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-height: 90vh; /* Giới hạn chiều cao */
+  overflow-y: auto; /* Cho phép cuộn nếu nội dung dài */
+  position: relative;
+}
+
+.po-details-title {
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.po-details-section {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #eee;
+}
+
+.po-details-section:last-of-type {
+  border-bottom: none; /* Bỏ đường kẻ cuối cùng */
+}
+
+.po-details-section p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.po-details-subtitle {
+  font-size: 1.4em;
+  color: #555;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.po-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.po-details-table th,
+.po-details-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.po-details-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #333;
+}
+
+.po-details-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.po-details-table tbody tr:hover {
+  background-color: #e9e9e9;
+}
+
+.po-details-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .po-details-content {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .po-details-title {
+    font-size: 1.5em;
+  }
+
+  .po-details-subtitle {
+    font-size: 1.2em;
+  }
+
+  .po-details-table th,
+  .po-details-table td {
+    padding: 8px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .po-details-content {
+    padding: 15px;
+  }
+
+  .po-details-table {
+    /* Cho phép cuộn ngang bảng trên màn hình nhỏ */
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .po-details-table thead, .po-details-table tbody, .po-details-table th, .po-details-table td, .po-details-table tr {
+    display: block;
+  }
+
+  .po-details-table thead {
+    float: left;
+  }
+
+  .po-details-table tbody {
+    width: auto;
+    position: relative;
+    overflow-x: auto;
+  }
+
+  .po-details-table td, .po-details-table th {
+    padding: 10px .625em;
+    height: 35px; /* Chiều cao cố định cho mỗi hàng */
+  }
+
+  .po-details-table thead tr {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  /* Ẩn tiêu đề cột trên mobile và hiển thị label trong td */
+  .po-details-table th {
+    display: none;
+  }
+
+  .po-details-table td:before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 10px;
+  }
+
+  /* Cần cập nhật JSX để thêm data-label vào mỗi td */
+}

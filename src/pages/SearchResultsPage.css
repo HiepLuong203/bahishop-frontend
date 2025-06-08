@@ -1,0 +1,320 @@
+/* src/pages/SearchResultsPage.css */
+
+.srp-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  margin-left: 200px;
+  margin-right: 200px;
+  max-width: calc(100vw - 400px);
+  box-sizing: border-box;
+}
+
+.srp-loading-message,
+.srp-error-message {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2em;
+  color: #555;
+  background-color: #fff;
+  margin-left: 200px;
+  margin-right: 200px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.srp-error-message {
+  color: #dc3545; /* Màu đỏ cho lỗi */
+}
+
+.srp-main-content {
+  display: flex;
+  gap: 20px;
+}
+
+/* Product Categories Sidebar */
+.srp-product-categories {
+  flex: 0 0 250px; /* Cố định chiều rộng sidebar */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  height: fit-content; /* Đảm bảo chiều cao vừa với nội dung */
+}
+
+.srp-category-title {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.srp-categories-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.srp-category-item {
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  color: #555;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-size: 1.1em;
+}
+
+.srp-category-item:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.srp-category-item.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+/* Product List / Search Results Grid */
+.srp-product-list {
+  flex-grow: 1; /* Cho phép danh sách sản phẩm chiếm hết không gian còn lại */
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.srp-search-results-title {
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
+}
+
+.srp-products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 cột trên desktop */
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.srp-product-card {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Để các mục dồn lên trên */
+  align-items: center;
+  min-height: 380px;
+  position: relative; /* Quan trọng cho badge */
+  overflow: hidden;
+}
+
+.srp-product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.srp-product-image {
+  max-width: 100%;
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 5px; /* Giảm khoảng cách với tên sản phẩm */
+  border-radius: 5px;
+  position: relative;
+  z-index: 0;
+}
+
+.srp-product-name {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px; /* Giảm khoảng cách với giá */
+  flex-grow: 0; /* Quan trọng: Ngăn tên sản phẩm chiếm hết không gian */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 2.4em;
+}
+
+.srp-price-container {
+  width: 100%;
+  margin-top: 5px; /* Giảm khoảng cách với tên sản phẩm */
+}
+
+.srp-original-price {
+  font-size: 0.95em;
+  color: #888;
+  text-decoration: line-through;
+  margin-bottom: 5px;
+}
+
+.srp-discount-price {
+  font-size: 1em;
+  font-weight: bold;
+  color: #e44d26;
+}
+
+.srp-regular-price {
+  font-size: 1.15em;
+  font-weight: bold;
+  color: #333;
+}
+
+.srp-no-results-message {
+  text-align: center;
+  font-size: 1.1em;
+  color: #777;
+  padding: 20px;
+  grid-column: 1 / -1; /* Đảm bảo thông báo chiếm toàn bộ chiều rộng grid */
+}
+
+/* Badges for products */
+.srp-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  z-index: 10;
+  text-align: left;
+}
+
+.srp-best-sale-badge {
+  background-color: green; /* Màu sắc bạn đã chọn */
+}
+
+.srp-sale-badge {
+  background-color: #dc3545;
+}
+
+.srp-new-badge {
+  background-color: #007bff;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .srp-container {
+    margin-left: 100px;
+    margin-right: 100px;
+    max-width: calc(100vw - 200px);
+  }
+  .srp-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .srp-container {
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: calc(100vw - 40px);
+  }
+  .srp-main-content {
+    flex-direction: column;
+  }
+  .srp-product-categories {
+    flex: none;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .srp-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .srp-product-card {
+    min-height: 350px;
+    padding: 15px;
+  }
+  .srp-product-image {
+    height: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .srp-search-results-title {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+  }
+  .srp-product-card {
+    min-height: 320px;
+  }
+  .srp-product-image {
+    height: 120px;
+  }
+  .srp-product-name {
+    font-size: 1.1em;
+  }
+  .srp-original-price, .srp-discount-price, .srp-regular-price {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 576px) {
+  .srp-container {
+    padding: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: calc(100vw - 20px);
+  }
+  .srp-main-content {
+    gap: 15px;
+  }
+  .srp-product-categories {
+    padding: 15px;
+  }
+  .srp-category-title {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+  }
+  .srp-category-item {
+    padding: 8px 10px;
+    font-size: 1em;
+  }
+  .srp-product-list {
+    padding: 15px;
+  }
+  .srp-search-results-title {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+  .srp-products-grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 15px;
+  }
+  .srp-product-card {
+    min-height: 280px;
+    padding: 10px;
+  }
+  .srp-product-image {
+    height: 100px;
+    margin-bottom: 10px;
+  }
+  .srp-product-name {
+    font-size: 1em;
+    margin-bottom: 5px;
+  }
+  .srp-original-price, .srp-discount-price, .srp-regular-price {
+    font-size: 0.85em;
+  }
+  .srp-badge {
+    padding: 4px 8px;
+    font-size: 0.7em;
+  }
+}

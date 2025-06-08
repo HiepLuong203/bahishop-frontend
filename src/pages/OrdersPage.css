@@ -1,0 +1,330 @@
+/* OrdersPage.css */
+
+/* Container chung với margin 200px trái phải */
+.order-container {
+  padding: 20px;
+  background-color: #f5f5f5; /* Nền cho toàn bộ khu vực content */
+  margin-left: 200px;
+  margin-right: 200px;
+  max-width: calc(100vw - 400px); /* Đảm bảo không tràn màn hình */
+  box-sizing: border-box;
+}
+
+/* Base styles cho trang đặt hàng */
+.orders-page-content { /* Thêm wrapper cho nội dung chính của trang */
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Styles cho thông báo lỗi/tải */
+.orders-loading-message, /* Đổi từ content p-4 text-center */
+.orders-error-message {  /* Đổi từ content p-4 text-center text-red-500 */
+  text-align: center;
+  padding: 50px 20px;
+  font-size: 1.2em;
+  color: #555;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.orders-error-message {
+    color: #dc3545;
+}
+
+
+/* Layout chính của trang */
+.orders-container { /* Đổi tên class */
+  display: flex;
+  flex-wrap: wrap; /* Cho phép các cột xuống dòng trên màn hình nhỏ */
+  gap: 30px; /* Khoảng cách giữa các cột */
+}
+
+.orders-info-column,
+.orders-summary-column {
+  flex: 1; /* Cho phép mỗi cột chiếm một phần bằng nhau */
+  min-width: 300px; /* Đảm bảo không bị quá nhỏ trên màn hình vừa */
+}
+
+.orders-title {
+  font-size: 2em; /* Tương đương text-2xl */
+  font-weight: 600; /* Tương đương font-semibold */
+  margin-bottom: 25px;
+  color: #333;
+  text-align: center;
+}
+
+/* Form thông tin đặt hàng */
+.orders-form-group {
+  margin-bottom: 15px;
+}
+
+.orders-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.orders-form-group input[type="text"],
+.orders-form-group input[type="tel"],
+.orders-form-group select,
+.orders-form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.orders-form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Bảng tóm tắt đơn hàng */
+.orders-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-summary-table thead th {
+  background-color: #f8f8f8;
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+}
+
+.orders-summary-table tbody td {
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  vertical-align: middle;
+  color: #666;
+}
+
+
+
+.orders-product-info {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #007bff;
+}
+
+.orders-product-info:hover {
+    text-decoration: underline;
+}
+
+.orders-product-image {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
+.orders-product-name {
+    /* Không cần style riêng, chỉ để tên lớp nhất quán */
+    font-weight: 500;
+    color: #333;
+}
+
+.orders-action-buttons {
+  text-align: center;
+}
+
+.orders-remove-button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.orders-remove-button:hover {
+  color: #c82333;
+}
+
+.orders-summary-table tfoot td {
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  font-weight: 600;
+  color: #333;
+}
+
+.orders-total-label {
+  text-align: right;
+  font-size: 1.1em;
+}
+
+.orders-total-amount {
+  font-size: 1.1em;
+  color: #007bff;
+}
+
+.orders-checkout-button-cell {
+  text-align: center;
+  padding-top: 20px;
+}
+
+.orders-checkout-button {
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #28a745; /* Màu xanh lá cây */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.orders-checkout-button:hover {
+  background-color: #218838;
+}
+
+.orders-continue-shopping-button {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #6c757d; /* Màu xám */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.orders-continue-shopping-button:hover {
+  background-color: #5a6268;
+}
+
+.orders-continue-shopping-link {
+    color: white;
+    text-decoration: none;
+    display: block; /* Để link chiếm toàn bộ nút */
+}
+
+/* QR Code Modal */
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Đảm bảo modal nằm trên cùng */
+}
+
+.qr-modal-content {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  max-width: 90%; /* Giới hạn chiều rộng của modal */
+  max-height: 90%; /* Giới hạn chiều cao của modal */
+  overflow-y: auto; /* Cho phép cuộn nếu nội dung quá dài */
+}
+
+.qr-modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.qr-modal-close-button:hover {
+  color: #333;
+}
+
+.qr-modal-title {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.qr-modal-image {
+  max-width: 100%; /* Đảm bảo ảnh không tràn ra khỏi modal */
+  height: auto;
+  margin-top: 15px;
+  border: 1px solid #eee;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .cp-container {
+    margin-left: 50px;
+    margin-right: 50px;
+    max-width: calc(100vw - 100px);
+  }
+}
+
+@media (max-width: 768px) {
+  .cp-container {
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: calc(100vw - 20px);
+    padding: 10px;
+  }
+
+  .orders-container {
+    flex-direction: column; /* Các cột xếp chồng lên nhau trên mobile */
+    gap: 20px;
+  }
+
+  .orders-info-column,
+  .orders-summary-column {
+    min-width: unset; /* Bỏ min-width trên mobile */
+  }
+
+  .orders-title {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+  }
+
+  .orders-summary-table thead th,
+  .orders-summary-table tbody td {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  .orders-summary-table tfoot td {
+    padding: 10px;
+  }
+
+  .orders-checkout-button,
+  .orders-continue-shopping-button {
+    font-size: 1em;
+    padding: 10px 15px;
+  }
+
+  .qr-modal-content {
+      padding: 20px;
+  }
+
+  .qr-modal-title {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+  }
+}

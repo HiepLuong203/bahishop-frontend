@@ -1,0 +1,131 @@
+/* src/pages/admin/AdminProductImagesPage.css */
+.admin-product-images-page {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.admin-product-images-page h1 {
+  color: #343a40;
+  margin-bottom: 20px;
+}
+
+.product-selection-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.product-selection-container label {
+  font-weight: bold;
+  color: #555;
+}
+
+.product-selection-container select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  flex-grow: 1; /* Cho phép select box mở rộng */
+  max-width: 300px; /* Giới hạn chiều rộng */
+}
+
+.admin-product-images-page h2 {
+  color: #343a40;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.product-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Responsive grid */
+  gap: 20px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.image-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-image-thumbnail-admin {
+  width: 100%;
+  height: 150px; /* Chiều cao cố định cho ảnh */
+  object-fit: cover; /* Đảm bảo ảnh vừa khung mà không bị méo */
+  display: block;
+  border-bottom: 1px solid #eee;
+}
+
+.image-card p {
+  margin: 10px 0;
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.image-actions {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  border-top: 1px solid #eee;
+}
+
+/* Reusing admin-button styles */
+.admin-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.admin-button.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.admin-button.primary:hover {
+  background-color: #0056b3;
+}
+
+.admin-button.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.admin-button.secondary:hover {
+  background-color: #545b62;
+}
+
+.admin-button.danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.admin-button.danger:hover {
+  background-color: #c82333;
+}
+
+.admin-button.small {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}

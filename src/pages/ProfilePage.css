@@ -1,0 +1,241 @@
+/* ProfilePage.css */
+.cp-container {
+  padding: 20px;
+  background-color: #f5f5f5; /* Nền cho toàn bộ khu vực content */
+  margin-left: 200px;
+  margin-right: 200px;
+  max-width: calc(100vw - 400px); /* Đảm bảo không tràn màn hình */
+  box-sizing: border-box;
+}
+
+/* Base styles cho trang profile */
+.profile-page-content {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profile-title { 
+  font-size: 2em; 
+  font-weight: 600; 
+  margin-bottom: 20px; 
+  color: #333;
+  text-align: center;
+}
+
+/* Styles cho thông báo lỗi/tải */
+.profile-loading-message, 
+.profile-error-message,  
+.profile-no-user-message { 
+  text-align: center;
+  padding: 50px 20px;
+  font-size: 1.2em;
+  color: #555;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Verification Alert */
+.profile-verification-alert { 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff3cd; 
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.profile-verification-alert-text { 
+  flex-grow: 1;
+  margin-right: 15px;
+}
+
+.profile-verification-alert-close-button {
+  background: none;
+  border: none;
+  color: #856404;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s ease;
+}
+
+.profile-verification-alert-close-button:hover {
+  color: #a88100;
+}
+
+/* Bảng thông tin profile */
+.profile-table { 
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.profile-table th,
+.profile-table td {
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.profile-table th {
+  background-color: #f8f8f8;
+  font-weight: 600;
+  color: #555;
+  width: 30%; 
+}
+
+.profile-table td {
+  color: #666;
+}
+
+/* Input khi chỉnh sửa */
+.profile-input { 
+  width: calc(100% - 20px); /* Khoảng cách để không chạm viền */
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng chiều rộng */
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+
+/* Nút hành động */
+.profile-button { /* Base class cho các nút */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-right: 10px; /* Khoảng cách giữa các nút */
+}
+
+.profile-edit-button { 
+  background-color: #007bff;
+  color: white;
+}
+
+.profile-edit-button:hover {
+  background-color: #0056b3;
+}
+
+.profile-save-button { 
+  background-color: #28a745;
+  color: white;
+}
+
+.profile-save-button:hover {
+  background-color: #218838;
+}
+
+.profile-cancel-button { 
+  background-color: #6c757d;
+  color: white;
+  margin-left: 0; /* Đặt lại margin để tránh xung đột với .profile-button */
+}
+
+.profile-cancel-button:hover {
+  background-color: #5a6268;
+}
+.profile-change-password-button {
+  background-color: #6f42c1; 
+  color: white;
+}
+
+.profile-change-password-button:hover {
+  background-color: #5a359e;
+}
+.profile-activate-button { 
+  background-color: #ffc107;
+  color: #212529;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.profile-activate-button:hover {
+  background-color: #e0a800;
+}
+
+/* Wrapper cho các nút khi chỉnh sửa */
+.profile-buttons-wrapper { 
+  margin-top: 20px; 
+  text-align: center; 
+}
+
+/* Heading chỉnh sửa thông tin */
+.profile-edit-heading { 
+  font-size: 1.5em; 
+  font-weight: 600; 
+  margin-bottom: 15px; 
+  color: #333;
+  text-align: center;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .cp-container {
+    margin-left: 50px;
+    margin-right: 50px;
+    max-width: calc(100vw - 100px);
+  }
+}
+
+@media (max-width: 768px) {
+  .cp-container {
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: calc(100vw - 20px);
+    padding: 10px;
+  }
+
+  .profile-title {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+  }
+
+  .profile-table th,
+  .profile-table td {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  .profile-table th {
+    width: 35%; /* Tăng chiều rộng cột tiêu đề trên mobile */
+  }
+  .profile-table td {
+    width: 65%; /* Tăng chiều rộng cột dữ liệu trên mobile */
+  }
+
+  .profile-input {
+    width: 95%; /* Điều chỉnh để phù hợp với padding */
+  }
+
+  .profile-button {
+    display: block; /* Các nút sẽ xuống dòng trên mobile */
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px; /* Khoảng cách giữa các nút khi xuống dòng */
+  }
+
+  .profile-cancel-button {
+    margin-left: 0; /* Đảm bảo không có margin-left thừa */
+  }
+
+  .profile-buttons-wrapper {
+    text-align: center; /* Vẫn căn giữa các nút khi xuống dòng */
+  }
+}

@@ -1,0 +1,94 @@
+.admin-page {
+  padding: 20px;
+  background-color: #f4f6f8; /* Màu nền nhạt */
+  min-height: 100vh; /* Đảm bảo chiếm toàn bộ chiều cao viewport */
+}
+
+.admin-page h1 {
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.dashboard-widgets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid responsive */
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.widget {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.widget:hover {
+  transform: translateY(-5px);
+}
+
+.widget h3 {
+  color: #555;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+
+.widget p {
+  color: #007bff; /* Màu xanh dương nổi bật cho số liệu */
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+}
+.widget-link {
+  text-decoration: none; /* Loại bỏ gạch chân của link */
+  color: inherit; /* Kế thừa màu chữ từ widget */
+  display: block; /* Để link chiếm toàn bộ diện tích widget */
+}
+
+.widget.clickable {
+  cursor: pointer;
+}
+
+.widget.clickable:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-7px);
+}
+
+.widget small {
+  display: block;
+  color: #777;
+  font-size: 0.8em;
+  margin-top: 5px;
+}
+/* Thêm một chút màu sắc khác biệt cho mỗi widget */
+.dashboard-widgets .widget:nth-child(1) {
+  border-left: 5px solid #28a745; /* Xanh lá cây */
+}
+
+.dashboard-widgets .widget:nth-child(2) {
+  border-left: 5px solid #ffc107; /* Vàng */
+}
+
+.dashboard-widgets .widget:nth-child(3) {
+  border-left: 5px solid #dc3545; /* Đỏ */
+}
+
+/* Nếu bạn có nhiều widget hơn, hãy thêm màu khác */
+
+/* Thêm style cho phần nội dung chi tiết hơn (nếu có) */
+.dashboard-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.dashboard-content h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+}

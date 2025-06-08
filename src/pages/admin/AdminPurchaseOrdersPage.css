@@ -1,0 +1,120 @@
+/* src/pages/admin/AdminPurchaseOrdersPage.css */
+.admin-purchase-orders-page {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.admin-purchase-orders-page h1 {
+  color: #343a40;
+  margin-bottom: 20px;
+}
+
+.admin-purchase-orders-actions {
+  margin-bottom: 20px;
+}
+
+/* Reusing .admin-button styles from AdminProductsPage.css or a global admin-styles.css */
+/* If you don't have a global admin-button style, you can copy it here */
+.admin-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.admin-button.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.admin-button.primary:hover {
+  background-color: #0056b3;
+}
+
+.admin-button.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.admin-button.secondary:hover {
+  background-color: #545b62;
+}
+
+.admin-button.danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.admin-button.danger:hover {
+  background-color: #c82333;
+}
+
+.admin-button.small {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}
+
+.admin-purchase-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-purchase-orders-table th,
+.admin-purchase-orders-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.admin-purchase-orders-table th {
+  background-color: #343a40;
+  color: white;
+  font-weight: bold;
+}
+
+.admin-purchase-orders-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.admin-purchase-orders-table tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+.actions-cell button {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.date-filter label {
+  font-weight: bold;
+}
+
+.date-filter input[type="date"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.admin-button.default {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #ced4da;
+}
+
+.admin-button.default:hover {
+  background-color: #e9ecef;
+}
