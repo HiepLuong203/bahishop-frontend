@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./HomePage.css"; // Giữ nguyên tên file CSS
 import { Link } from "react-router-dom";
-import { Category } from "../types/category";
 import { Product } from "../types/product";
-import categoryApi from "../api/categoryApi";
 import productApi from "../api/productApi";
 import ImageSlider from "../components/ImageSlider";
+import CategoryTreeNav from "../components/CategoryTreeNav"; 
 
 const sliderImages = [
   "/anhbia1.jpg",
@@ -15,21 +14,11 @@ const sliderImages = [
 ];
 
 const HomePage: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [promotionalProducts, setPromotionalProducts] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await categoryApi.getAll();
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Lỗi khi tải danh mục:", error);
-      }
-    };
-
     const fetchProducts = async () => {
       try {
         const response = await productApi.getAll();
@@ -51,35 +40,20 @@ const HomePage: React.FC = () => {
       }
     };
 
-    fetchCategories();
     fetchProducts();
   }, []);
 
   return (
     <div className="hp-content">
       <div className="hp-top-section">
-        <section className="hp-product-categories-homepage">
-          <h3 className="hp-category-title">DANH MỤC SẢN PHẨM</h3>
-          <div className="hp-categories-list">
-            {categories.map((category) => (
-              <Link
-                key={category.category_id}
-                to={`/categories/${category.category_id}`}
-                className="hp-category-item"
-                style={{ cursor: "pointer", textDecoration: "none", color: 'inherit' }}
-              >
-                {category.name}
-              </Link>
-            ))}
-          </div>
-        </section>
+        <CategoryTreeNav />
         <div className="hp-slider-wrapper">
           <div className="hp-image-slider-container">
             <ImageSlider images={sliderImages} interval={4000} />
           </div>
         </div>
       </div>
-     
+
       <section className="hp-featured-products hp-product-section">
         <h2 className="hp-section-title">Sản phẩm bán chạy</h2>
         <div className="hp-products-grid">

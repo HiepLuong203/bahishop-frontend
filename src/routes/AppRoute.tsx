@@ -25,6 +25,7 @@ import AdminPromotionsPage from "../pages/admin/AdminPromotionsPage";
 import AdminProductImagesPage from "../pages/admin/AdminProductImagesPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
 import ProductBatchManagementPage from '../pages/admin/ProductBatchManagementPage';
+import RevenuePage from '../pages/admin/RevenuePage'; 
 const AppRouter = () => {
   return (  
     <Router>
@@ -129,6 +130,7 @@ const AppRouter = () => {
           <Route path="productimage" element={<AdminProductImagesPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
           <Route path="productbatch" element={<ProductBatchManagementPage />} />
+          <Route path="revenue" element={<RevenuePage />} />
           {/* ... các route admin khác ... */}
         </Route>
         {/* Các route khác sẽ được thêm vào đây */}

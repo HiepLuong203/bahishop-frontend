@@ -1,0 +1,46 @@
+/* src/components/common/CategoryDropdownNav.css */
+
+.cdn-category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Các cấp độ lồng nhau của danh mục */
+.cdn-category-list.cdn-level-1,
+.cdn-category-list.cdn-level-2,
+.cdn-category-list.cdn-level-3 {
+  /* Margin-top để tạo khoảng cách giữa danh mục cha và danh sách con của nó */
+  margin-top: 5px;
+  /* Nếu bạn muốn đường viền hoặc nền khác cho cấp độ con */
+  /* border-left: 1px solid #eee; */
+  /* background-color: #fdfdfd; */
+}
+
+
+.cdn-category-item {
+  position: relative;
+  /* Thêm margin-bottom cho từng item nếu cần khoảng cách giữa chúng */
+  /* margin-bottom: 2px; */
+}
+
+.cdn-category-link {
+  display: block; /* Đảm bảo toàn bộ khu vực link có thể click được */
+  padding: 8px 15px; /* Padding mặc định */
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap; /* Ngăn văn bản xuống dòng trong dropdown */
+  font-size: 0.95em; /* Có thể điều chỉnh kích thước font */
+}
+
+.cdn-category-link:hover {
+  background-color: #f0f0f0;
+  color: #007bff;
+}
+
+/* Tùy chọn: Style cho danh mục đang được chọn (nếu bạn muốn highlight) */
+/* .cdn-category-link.active {
+  background-color: #007bff;
+  color: white;
+} */

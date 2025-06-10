@@ -1,19 +1,20 @@
 // src/pages/admin/AdminPurchaseOrdersPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './AdminPurchaseOrdersPage.css';
 import purchaseOrderApi from '../../api/purchaseOrderApi';
 import supplierApi from '../../api/supplierApi';
-import productApi from '../../api/productApi'; 
-import { PurchaseOrder } from '../../types/purchaseOrder'; 
+import productApi from '../../api/productApi';
+import { PurchaseOrder } from '../../types/purchaseOrder';
 import { Supplier } from '../../types/supplier';
-import { Product } from '../../types/product'; 
+import { Product } from '../../types/product';
 import PurchaseOrderFormModal from '../../components/admin/PurchaseOrderFormModal';
 import PurchaseOrderDetailsModal from '../../components/admin/PurchaseOrderDetailsModal';
+import Pagination from '../../components/Pagination'; 
 
 const AdminPurchaseOrdersPage: React.FC = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [products, setProducts] = useState<Product[]>([]); 
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -23,28 +24,32 @@ const AdminPurchaseOrdersPage: React.FC = () => {
   const [fromDate, setFromDate] = useState<string | null>(null);
   const [toDate, setToDate] = useState<string | null>(null);
 
-  const fetchPurchaseOrders = async () => {
+  // --- States for Pagination ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(15); 
+
+  const fetchPurchaseOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const [ordersResponse, suppliersResponse, productsResponse] = await Promise.all([
         purchaseOrderApi.getAll(),
         supplierApi.getAll(),
-        productApi.getAll(), 
+        productApi.getAll(),
       ]);
       setPurchaseOrders(ordersResponse.data);
       setSuppliers(suppliersResponse.data);
-      setProducts(productsResponse.data); 
+      setProducts(productsResponse.data);
       setLoading(false);
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'Lỗi khi tải dữ liệu.');
       setLoading(false);
     }
-  };
+  }, []); // useCallback dependency array is empty because it only depends on purchaseOrderApi, supplierApi, productApi which are stable.
 
   useEffect(() => {
     fetchPurchaseOrders();
-  }, []);
+  }, [fetchPurchaseOrders]);
 
   const getSupplierName = (supplierId: number): string => {
     const supplier = suppliers.find(s => s.supplier_id === supplierId);
@@ -57,7 +62,6 @@ const AdminPurchaseOrdersPage: React.FC = () => {
   };
 
   const handleEditPurchaseOrder = (order: PurchaseOrder) => {
-    // Luôn cho phép sửa các trường chính của đơn hàng
     setCurrentPurchaseOrder(order);
     setShowModal(true);
   };
@@ -81,6 +85,7 @@ const AdminPurchaseOrdersPage: React.FC = () => {
   const handlePurchaseOrderFormSubmitSuccess = () => {
     setShowModal(false);
     fetchPurchaseOrders();
+    setCurrentPage(1); // Reset to first page after successful submission
   };
 
   const handleCloseDetailsModal = () => {
@@ -103,6 +108,7 @@ const AdminPurchaseOrdersPage: React.FC = () => {
       try {
         const response = await purchaseOrderApi.getPurchaseOrdersByDateRange(fromDate, toDate);
         setPurchaseOrders(response.data);
+        setCurrentPage(1); // Reset to first page after filter
       } catch (err: any) {
         setError(err.response?.data?.message || err.message || 'Lỗi khi lọc đơn nhập hàng theo ngày.');
       } finally {
@@ -116,7 +122,17 @@ const AdminPurchaseOrdersPage: React.FC = () => {
   const resetDateFilter = async () => {
     setFromDate(null);
     setToDate(null);
+    setCurrentPage(1); // Reset to first page after resetting filter
     fetchPurchaseOrders(); // Tải lại tất cả đơn hàng
+  };
+
+  // --- Pagination Logic ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPurchaseOrders = purchaseOrders.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   };
 
   if (loading) {
@@ -154,33 +170,43 @@ const AdminPurchaseOrdersPage: React.FC = () => {
         </div>
       </div>
       {purchaseOrders.length > 0 ? (
-        <table className="admin-purchase-orders-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nhà cung cấp</th>
-              <th>Ngày đặt hàng</th>
-              <th>Tổng tiền</th>
-              <th>Ghi chú</th>
-              <th className="action-header">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {purchaseOrders.map((order) => (
-              <tr key={order.id}>
-                <td>{order.id}</td>
-                <td>{getSupplierName(order.supplier_id)}</td>
-                <td>{new Date(order.order_date).toLocaleDateString('vi-VN')}</td>
-                <td>{Number(order.total_amount).toLocaleString('vi-VN')} VNĐ</td>
-                <td>{order.note || 'Không có'}</td>
-                <td className="actions-cell">
-                  <button className="admin-button secondary small" onClick={() => handleEditPurchaseOrder(order)}>Sửa</button>
-                  <button className="admin-button info small" onClick={() => handleViewOrderDetails(order.id)}>Chi tiết</button>
-                </td>
+        <>
+          <table className="admin-purchase-orders-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nhà cung cấp</th>
+                <th>Ngày đặt hàng</th>
+                <th>Tổng tiền</th>
+                <th>Ghi chú</th>
+                <th className="action-header">Hành động</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {/* Displaying only current page's orders */}
+              {currentPurchaseOrders.map((order) => (
+                <tr key={order.id}>
+                  <td>{order.id}</td>
+                  <td>{getSupplierName(order.supplier_id)}</td>
+                  <td>{new Date(order.order_date).toLocaleDateString('vi-VN')}</td>
+                  <td>{Number(order.total_amount).toLocaleString('vi-VN')} VNĐ</td>
+                  <td>{order.note || 'Không có'}</td>
+                  <td className="actions-cell">
+                    <button className="admin-button secondary small" onClick={() => handleEditPurchaseOrder(order)}>Sửa</button>
+                    <button className="admin-button info small" onClick={() => handleViewOrderDetails(order.id)}>Chi tiết</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* Pagination component */}
+          <Pagination
+            totalItems={purchaseOrders.length}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </>
       ) : (
         <p>Không có đơn nhập hàng nào.</p>
       )}

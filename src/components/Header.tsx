@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSearch,faShoppingCart,faUser,} from "@fortawesome/free-solid-svg-icons";
-import "./Header.css"; 
+import "./Header.css";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import categoryApi from "../api/categoryApi";
 import { Category } from "../types/category";
 import { UserInfo } from "../types/user";
 import cartApi from "../api/cartApi";
 import { CartItemWithProduct } from "../types/cartItem";
+import CategoryDropdownNav from "./CategoryDropdownNav"; 
 
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserInfo | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]); 
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [isDropdownHovering, setIsDropdownHovering] = useState(false);
   const navigate = useNavigate();
@@ -36,19 +37,18 @@ const Header: React.FC = () => {
         const user = JSON.parse(storedUser);
         setCurrentUser(user);
       }
-      // Gọi fetchMiniCart khi component mount và người dùng đã đăng nhập
       fetchMiniCart();
     } else {
       setIsLoggedIn(false);
       setCurrentUser(null);
     }
-  }, []); // Empty dependency array means this runs once after the initial render
+  }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await categoryApi.getAll();
-        setCategories(response.data);
+        setCategories(response.data); // Lấy tất cả danh mục phẳng
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
       }
@@ -173,6 +173,11 @@ const Header: React.FC = () => {
       }
     }, 100);
   };
+
+  const handleCategorySelectFromDropdown = (categoryId: number) => {
+    setShowCategoriesDropdown(false);
+  };
+
   const reloadPage = (path: string) => {
     if (location.pathname === path) {
       window.location.reload();
@@ -188,7 +193,8 @@ const Header: React.FC = () => {
   const getTotalCartQuantity = () => {
     return miniCartItems.reduce((total, item) => total + item.quantity, 0);
   };
-   return (
+
+  return (
     <header className="hd-header">
       <div className="hd-header-top">
         <div className="hd-logo">
@@ -213,7 +219,7 @@ const Header: React.FC = () => {
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </div>
-        <div className="hd-icons-container"> {/* Container cho cart và user icon */}
+        <div className="hd-icons-container">
           <div
             className="hd-cart-icon-wrapper"
             onMouseEnter={handleMouseEnterCart}
@@ -337,7 +343,7 @@ const Header: React.FC = () => {
             </div>
           )}
            {!isLoggedIn && (
-            <div className="hd-auth-buttons-mobile"> {/* Chỉ hiển thị trên mobile */}
+            <div className="hd-auth-buttons-mobile">
               <Link to="/dangnhap" onClick={() => reloadPage('/dangnhap')} className="hd-auth-button">ĐĂNG NHẬP</Link>
               <Link to="/dangky" onClick={() => reloadPage('/dangky')} className="hd-auth-button">ĐĂNG KÝ</Link>
             </div>
@@ -363,33 +369,30 @@ const Header: React.FC = () => {
                 onMouseEnter={handleMouseEnterDropdown}
                 onMouseLeave={handleMouseLeaveDropdown}
               >
-                {categories.map((category) => (
-                  <Link
-                    key={category.category_id}
-                    to={`/categories/${category.category_id}`}
-                    onClick={() => setShowCategoriesDropdown(false)}
-                    className="hd-dropdown-item"
-                  >
-                    {category.name}
-                  </Link>
-                ))}
+                <CategoryDropdownNav
+                  categories={categories} 
+                  onCategorySelect={handleCategorySelectFromDropdown} 
+                />
               </div>
             )}
+          </li>
+           <li className="hd-nav-item">
+              <Link to="/products" onClick={() => reloadPage('/products')} className="hd-nav-link">TẤT CẢ SẢN PHẨM</Link>
           </li>
           <li className="hd-nav-item">
              <Link to="/suppliers" onClick={() => reloadPage('/suppliers')} className="hd-nav-link">NHÀ CUNG CẤP</Link>
            </li>
            <li className="hd-nav-item">
-             <Link to="/news" onClick={() => reloadPage('/news')} className="hd-nav-link">TIN TỨC</Link> {/* Đổi từ /suppliers sang /news */}
+             <Link to="https://vnexpress.net/tag/thuc-pham-sach-130156" onClick={() => reloadPage('/news')} className="hd-nav-link">TIN TỨC</Link>
            </li>
           {!isLoggedIn && (
             <>
-              <li className="hd-nav-item"> {/* Chỉ hiển thị trên desktop */}
+              <li className="hd-nav-item">
                 <Link to="/dangnhap" onClick={() => reloadPage('/dangnhap')} className="hd-nav-link hd-auth-button">
                   ĐĂNG NHẬP
                 </Link>
               </li>
-              <li className="hd-nav-item "> {/* Chỉ hiển thị trên desktop */}
+              <li className="hd-nav-item ">
                 <Link to="/dangky" onClick={() => reloadPage('/dangky')} className="hd-nav-link hd-auth-button">
                   ĐĂNG KÝ
                 </Link>

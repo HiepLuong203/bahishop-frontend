@@ -1,9 +1,10 @@
 // src/pages/admin/AdminOrdersPage.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import './AdminOrdersPage.css'; // Sẽ tạo file CSS này
+import './AdminOrdersPage.css';
 import orderApi from '../../api/orderApi';
-import { Order, OrderCounts,EditingStatus } from '../../types/order';
-import OrderDetailsModal from '../../components/admin/OrderDetailsModal'; // Sẽ tạo component này
+import { Order, OrderCounts, EditingStatus } from '../../types/order';
+import OrderDetailsModal from '../../components/admin/OrderDetailsModal';
+import Pagination from '../../components/Pagination';
 
 const AdminOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -20,6 +21,11 @@ const AdminOrdersPage: React.FC = () => {
   const [editingStatus, setEditingStatus] = useState<EditingStatus>({});
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [currentUpdateOrderId, setCurrentUpdateOrderId] = useState<number | null>(null);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20); 
+
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
@@ -80,7 +86,8 @@ const AdminOrdersPage: React.FC = () => {
         response = await orderApi.getOrderByIdOrUserId({ user_id: parseInt(searchTerm, 10) });
       }
       setOrders(response.data);
-      setFilterStatus('all'); // Reset filter khi tìm kiếm
+      setCurrentPage(1); // Reset to first page after search
+      setFilterStatus('all'); // Reset filter when searching
       setFromDate(null); // Reset date filter
       setToDate(null); // Reset date filter
     } catch (err: any) {
@@ -94,7 +101,6 @@ const AdminOrdersPage: React.FC = () => {
   const handleFilterByDate = async () => {
     if (fromDate && toDate) {
       const from = new Date(fromDate);
-      // Thêm thời gian kết thúc ngày cho toDate
       const to = new Date(toDate);
       to.setHours(23, 59, 59, 999);
 
@@ -109,6 +115,7 @@ const AdminOrdersPage: React.FC = () => {
         const toISO = to.toISOString();
         const response = await orderApi.getOrdersByDateRange(fromISO, toISO);
         setOrders(response.data.orders);
+        setCurrentPage(1); // Reset to first page after filter
         setSearchTerm('');
         setFilterStatus('all');
       } catch (error: any) {
@@ -127,6 +134,7 @@ const AdminOrdersPage: React.FC = () => {
     setFilterStatus('all');
     setFromDate(null);
     setToDate(null);
+    setCurrentPage(1); // Reset to first page after reset
     fetchOrders(); // Tải lại tất cả đơn hàng
   };
 
@@ -137,57 +145,67 @@ const AdminOrdersPage: React.FC = () => {
     return orders.filter(order => order.order_status === filterStatus);
   };
   const filteredOrders = getFilteredOrders();
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   const handleOrderStatusChange = (orderId: number, newStatus: string) => {
     setEditingStatus(prev => ({
-    ...prev,
-    [orderId]: { ...prev[orderId], order_status: newStatus },
+      ...prev,
+      [orderId]: { ...prev[orderId], order_status: newStatus },
     }));
   };
 
   const handlePaymentStatusChange = (orderId: number, newPaymentStatus: string) => {
     setEditingStatus(prev => ({
-    ...prev,
-    [orderId]: { ...prev[orderId], payment_status: newPaymentStatus },
+      ...prev,
+      [orderId]: { ...prev[orderId], payment_status: newPaymentStatus },
     }));
   };
 
   const handleUpdateRequest = (orderId: number) => {
     setCurrentUpdateOrderId(orderId);
     setShowUpdateModal(true);
-    
+
   };
 
   const handleCloseUpdateModal = () => {
     setCurrentUpdateOrderId(null);
     setShowUpdateModal(false);
-    };
+  };
 
   const handleFinalUpdateStatus = async () => {
     if (currentUpdateOrderId) {
-    const updates = editingStatus[currentUpdateOrderId] || {};
-    const currentOrder = orders.find(o => o.order_id === currentUpdateOrderId);
-    const currentOrderStatus = currentOrder?.order_status || 'pending';
-    const currentPaymentStatus = currentOrder?.payment_status || 'pending';
-    const newOrderStatus = updates.order_status !== undefined ? updates.order_status : currentOrderStatus;
-    const newPaymentStatus = updates.payment_status !== undefined ? updates.payment_status : currentPaymentStatus;
+      const updates = editingStatus[currentUpdateOrderId] || {};
+      const currentOrder = orders.find(o => o.order_id === currentUpdateOrderId);
+      const currentOrderStatus = currentOrder?.order_status || 'pending';
+      const currentPaymentStatus = currentOrder?.payment_status || 'pending';
+      const newOrderStatus = updates.order_status !== undefined ? updates.order_status : currentOrderStatus;
+      const newPaymentStatus = updates.payment_status !== undefined ? updates.payment_status : currentPaymentStatus;
 
-    setLoading(true);
-    try {
-      await orderApi.updateOrderStatusByAdmin(currentUpdateOrderId, newOrderStatus, newPaymentStatus);
-      alert(`Đã cập nhật trạng thái đơn hàng #${currentUpdateOrderId}`);
-      setEditingStatus(prev => {
-      const newState = { ...prev };
-      delete newState[currentUpdateOrderId];
-      return newState;
-      });
-      setShowUpdateModal(false);
-      setCurrentUpdateOrderId(null);
-      fetchOrders();
+      setLoading(true);
+      try {
+        await orderApi.updateOrderStatusByAdmin(currentUpdateOrderId, newOrderStatus, newPaymentStatus);
+        alert(`Đã cập nhật trạng thái đơn hàng #${currentUpdateOrderId}`);
+        setEditingStatus(prev => {
+          const newState = { ...prev };
+          delete newState[currentUpdateOrderId];
+          return newState;
+        });
+        setShowUpdateModal(false);
+        setCurrentUpdateOrderId(null);
+        fetchOrders();
       } catch (error: any) {
-      console.error('Lỗi khi cập nhật trạng thái đơn hàng:', error);
-      alert(`Không thể cập nhật trạng thái đơn hàng: ${error.response?.data?.message || error.message}`);
+        console.error('Lỗi khi cập nhật trạng thái đơn hàng:', error);
+        alert(`Không thể cập nhật trạng thái đơn hàng: ${error.response?.data?.message || error.message}`);
       } finally {
-      setLoading(false);
+        setLoading(false);
       }
     }
   };
@@ -274,7 +292,7 @@ const AdminOrdersPage: React.FC = () => {
         </div>
       </div>
 
-      {filteredOrders.length > 0 ? (
+      {currentOrders.length > 0 ? (
         <table className="admin-orders-table">
           <thead>
             <tr>
@@ -289,7 +307,7 @@ const AdminOrdersPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map((order) => (
+            {currentOrders.map((order) => (
               <tr key={order.order_id}>
                 <td>{order.order_id}</td>
                 <td>{order.user_id}</td>
@@ -315,6 +333,13 @@ const AdminOrdersPage: React.FC = () => {
         <p>Không tìm thấy đơn hàng nào.</p>
       )}
 
+      <Pagination
+        totalItems={filteredOrders.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
+
       {showDetailsModal && selectedOrder && (
         <OrderDetailsModal
           order={selectedOrder}
@@ -323,39 +348,39 @@ const AdminOrdersPage: React.FC = () => {
       )}
       {showUpdateModal && currentUpdateOrderId && (
         <div className="modal">
-        <div className="modal-content">
-        <span className="close-button" onClick={handleCloseUpdateModal}>&times;</span>
-        <h2>Cập nhật trạng thái đơn hàng #{currentUpdateOrderId}</h2>
-        <div className="modal-body">
-        <label htmlFor={`order-status-${currentUpdateOrderId}`}>Trạng thái đơn hàng:</label>
-        <select
-          id={`order-status-${currentUpdateOrderId}`}
-          value={editingStatus[currentUpdateOrderId]?.order_status || orders.find(o => o.order_id === currentUpdateOrderId)?.order_status || 'pending'}
-          onChange={(e) => handleOrderStatusChange(currentUpdateOrderId, e.target.value)}
-        >
-          <option value="pending">Chờ xử lý</option>
-          <option value="processing">Đang xử lý</option>
-          <option value="shipped">Đã giao</option>
-          <option value="delivered">Đã hoàn thành</option>
-          <option value="cancelled">Đã hủy</option>
-        </select>
+          <div className="modal-content">
+            <span className="close-button" onClick={handleCloseUpdateModal}>&times;</span>
+            <h2>Cập nhật trạng thái đơn hàng #{currentUpdateOrderId}</h2>
+            <div className="modal-body">
+              <label htmlFor={`order-status-${currentUpdateOrderId}`}>Trạng thái đơn hàng:</label>
+              <select
+                id={`order-status-${currentUpdateOrderId}`}
+                value={editingStatus[currentUpdateOrderId]?.order_status || orders.find(o => o.order_id === currentUpdateOrderId)?.order_status || 'pending'}
+                onChange={(e) => handleOrderStatusChange(currentUpdateOrderId, e.target.value)}
+              >
+                <option value="pending">Chờ xử lý</option>
+                <option value="processing">Đang xử lý</option>
+                <option value="shipped">Đã giao</option>
+                <option value="delivered">Đã hoàn thành</option>
+                <option value="cancelled">Đã hủy</option>
+              </select>
 
-        <label htmlFor={`payment-status-${currentUpdateOrderId}`} style={{ marginTop: '10px' }}>Trạng thái thanh toán:</label>
-        <select
-        id={`payment-status-${currentUpdateOrderId}`}
-        value={editingStatus[currentUpdateOrderId]?.payment_status || orders.find(o => o.order_id === currentUpdateOrderId)?.payment_status || 'pending'}
-        onChange={(e) => handlePaymentStatusChange(currentUpdateOrderId, e.target.value)}
-        >
-        <option value="pending">Chưa thanh toán</option>
-        <option value="paid">Đã thanh toán</option>
-        <option value="failed">Thanh toán thất bại</option>
-        </select>
-        </div>
-        <div className="modal-actions">
-        <button className="admin-button primary" onClick={handleFinalUpdateStatus}>Xác nhận</button>
-        <button className="admin-button default" onClick={handleCloseUpdateModal}>Hủy</button>
-        </div>
-        </div>
+              <label htmlFor={`payment-status-${currentUpdateOrderId}`} style={{ marginTop: '10px' }}>Trạng thái thanh toán:</label>
+              <select
+                id={`payment-status-${currentUpdateOrderId}`}
+                value={editingStatus[currentUpdateOrderId]?.payment_status || orders.find(o => o.order_id === currentUpdateOrderId)?.payment_status || 'pending'}
+                onChange={(e) => handlePaymentStatusChange(currentUpdateOrderId, e.target.value)}
+              >
+                <option value="pending">Chưa thanh toán</option>
+                <option value="paid">Đã thanh toán</option>
+                <option value="failed">Thanh toán thất bại</option>
+              </select>
+            </div>
+            <div className="modal-actions">
+              <button className="admin-button primary" onClick={handleFinalUpdateStatus}>Xác nhận</button>
+              <button className="admin-button default" onClick={handleCloseUpdateModal}>Hủy</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import productApi from '../api/productApi';
-import categoryApi from '../api/categoryApi';
 import { ProductWithDetails } from '../types/product';
-import { Category } from '../types/category';
 import './ProductDetailPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import cartApi from '../api/cartApi';
 import authApi from '../api/authApi';
-import ProductReviews from '../components/ProductReviews'; 
+import ProductReviews from '../components/ProductReviews';
+import CategoryTreeNav from '../components/CategoryTreeNav';
 
 const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: any }>();
@@ -18,14 +17,13 @@ const ProductDetailPage: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // Still useful for highlighting
   const [mainImageUrl, setMainImageUrl] = useState<string>('');
   const [mainImageId, setMainImageId] = useState<number | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [showInactiveAlert, setShowInactiveAlert] = useState(false);
-  
-  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('authToken')); 
+
+  const [isLoggedIn] = useState(() => !!localStorage.getItem('authToken'));
   const [isUserActive, setIsUserActive] = useState<boolean | null>(null);
   const navigate = useNavigate();
 
@@ -35,6 +33,10 @@ const ProductDetailPage: React.FC = () => {
         const productData = await productApi.getById(parseInt(productId, 10));
         const productWithImages: ProductWithDetails = productData.data;
         setProduct(productWithImages);
+        // Set the selected category based on the product's category_id
+        if (productWithImages.category_id) {
+          setSelectedCategory(productWithImages.category_id);
+        }
 
         let initialMainImageUrl = '';
         let initialMainImageId: number | null = null;
@@ -60,16 +62,6 @@ const ProductDetailPage: React.FC = () => {
       }
     };
 
-    const fetchCategories = async () => {
-      try {
-        const response = await categoryApi.getAll();
-        setCategories(response.data);
-      } catch (error: any) {
-        setError("Lỗi khi tải danh mục.");
-        console.error("Lỗi khi tải danh mục:", error);
-      }
-    };
-
     const fetchUserActiveStatus = async () => {
       const token = localStorage.getItem('authToken');
       if (token) {
@@ -86,7 +78,6 @@ const ProductDetailPage: React.FC = () => {
     };
 
     fetchProduct();
-    fetchCategories();
     fetchUserActiveStatus();
   }, [productId]);
 
@@ -122,7 +113,7 @@ const ProductDetailPage: React.FC = () => {
       const response = await cartApi.addToCart(cartItemData);
       console.log("Đã thêm vào giỏ hàng:", response.data);
       alert("Đã thêm sản phẩm vào giỏ hàng.");
-      window.location.reload();
+      window.location.reload(); // Reload to update cart icon (if any)
     } catch (error: any) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
       if (error.response && error.response.data && error.response.data.message === "Tài khoản chưa được kích hoạt. Vui lòng xác thực email.") {
@@ -149,6 +140,12 @@ const ProductDetailPage: React.FC = () => {
     navigate('/profile');
   };
 
+  // Function to handle category selection from CategoryTreeNav
+  const handleCategorySelect = (categoryId: number) => {
+    navigate(`/categories/${categoryId}`);
+  };
+
+
   if (loading) {
     return <div className="pdp-loading">Đang tải thông tin sản phẩm...</div>;
   }
@@ -162,11 +159,9 @@ const ProductDetailPage: React.FC = () => {
   }
 
   const allImages: { image_url: string; image_id: number | null }[] = [];
-  // Luôn thêm ảnh chính từ product.image_url nếu có, với image_id là null
   if (product.image_url) {
     allImages.push({ image_url: product.image_url, image_id: null });
   }
-  // Thêm các ảnh phụ từ product.images
   if (product.images) {
     product.images.forEach((img) => {
       allImages.push({ image_url: img.image_url, image_id: img.image_id });
@@ -176,24 +171,10 @@ const ProductDetailPage: React.FC = () => {
   return (
     <div className="pdp-content">
       <section className="pdp-main-content">
-        <section className="pdp-product-categories">
-          <h3 className="pdp-category-title">DANH MỤC SẢN PHẨM</h3>
-          <div className="pdp-categories-list">
-            {categories.map((category) => (
-              <Link
-                key={category.category_id}
-                to={`/categories/${category.category_id}`}
-                className={`pdp-category-item ${
-                  selectedCategory === category.category_id ? 'pdp-active' : ''
-                }`}
-                style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}
-                onClick={() => setSelectedCategory(category.category_id)}
-              >
-                {category.name}
-              </Link>
-            ))}
-          </div>
-        </section>
+        <CategoryTreeNav
+          selectedCategoryId={selectedCategory}
+          onCategorySelect={handleCategorySelect}
+        />
 
         <section className="pdp-product-detail-section">
           <div className="pdp-product-main-display-area">
@@ -204,11 +185,10 @@ const ProductDetailPage: React.FC = () => {
               <div className="pdp-product-thumbnails">
                 {allImages.map((image) => (
                   <img
-                    key={image.image_id !== null ? image.image_id : image.image_url} // Sử dụng image_id nếu có, nếu không thì dùng image_url làm key
+                    key={image.image_id !== null ? image.image_id : image.image_url}
                     src={`http://localhost:5000${image.image_url}`}
                     alt={`${product.name} - ${image.image_id || 'main'}`}
                     className={`pdp-product-image-thumbnail ${
-                      // So sánh cả URL và ID để xác định ảnh đang được chọn
                       (mainImageUrl === `http://localhost:5000${image.image_url}` && mainImageId === image.image_id) ? 'pdp-active-thumbnail' : ''
                     }`}
                     onClick={() =>
@@ -268,7 +248,7 @@ const ProductDetailPage: React.FC = () => {
 
           <div className="pdp-product-description-section-detail">
             <h2>Mô tả sản phẩm</h2>
-            <div className="pdp-product-description-content" dangerouslySetInnerHTML={{ __html: product.description || 'Không có mô tả.' }}></div>
+            <div className="pdp-product-description-content" style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: product.description || 'Không có mô tả.' }}></div>
           </div>
         </section>
       </section>
