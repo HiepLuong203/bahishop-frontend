@@ -1,13 +1,19 @@
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation,useNavigate } from 'react-router-dom';
 import './AdminLayout.css'; // Import CSS cho layout admin
 
 const AdminLayout: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const reloadPage = (path: string) => {
     if (location.pathname === path) {
       window.location.reload();
     }
+  };
+  const handleLogout = () => {
+    localStorage.removeItem('authToken'); // Xóa token xác thực
+    navigate('/dangnhap'); // Chuyển hướng về trang đăng nhập
+    alert('Bạn đã đăng xuất thành công!');
   };
   return (
     <div className="admin-layout">
@@ -53,7 +59,7 @@ const AdminLayout: React.FC = () => {
           <li>
             <Link to="/admin/purchaseorders" onClick={() => reloadPage('/admin/purchaseorders')}
               className={`sidebar-link ${location.pathname === '/admin/purchaseorders' ? 'active' : ''}`}>
-              Quản lý Nhập hàng
+              Quản lý Đơn Nhập hàng
             </Link>
           </li>
           <li>
@@ -69,10 +75,15 @@ const AdminLayout: React.FC = () => {
             </Link>
           </li>
           <li>
-            <Link to="/admin/orders" onClick={() => reloadPage('/admin/orders')}
-              className={`sidebar-link ${location.pathname === '/admin/thongkedoanhthu' ? 'active' : ''}`}>
+            <Link to="/admin/revenue" onClick={() => reloadPage('/admin/revenue')}
+              className={`sidebar-link ${location.pathname === '/admin/revenue' ? 'active' : ''}`}>
               Thống Kê Doanh Thu
             </Link>
+          </li>
+          <li>
+            <button className="admin-button logout-button" onClick={handleLogout}>
+              Đăng xuất
+            </button>
           </li>
           {/* Thêm các mục quản lý khác */}
         </ul>

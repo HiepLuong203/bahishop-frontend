@@ -2,9 +2,11 @@
 
 .pp-content {
   padding: 20px;
-  margin-left: 200px;
-  margin-right: 200px;
   background-color: #f5f5f5;
+  margin-left: 200px; /* Thêm margin để căn giữa nội dung */
+  margin-right: 200px; /* Thêm margin để căn giữa nội dung */
+  max-width: calc(100vw - 400px); /* Đảm bảo nội dung không bị tràn khi có margin */
+  box-sizing: border-box; /* Bao gồm padding và border vào kích thước */
 
 }
 
@@ -122,7 +124,7 @@
 .pp-product-list {
   flex-grow: 1;
   background-color: #fff;
-  padding: 25px;
+  padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
@@ -250,7 +252,14 @@
   border-color: #0056b3;
 }
 
-
+.cp-product-categories {
+  flex: 0 0 250px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  height: fit-content; /* Đảm bảo sidebar không chiếm toàn bộ chiều cao nếu nội dung ít */
+}
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .pp-main-content {

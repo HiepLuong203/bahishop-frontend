@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/CategoryProductsPage.tsx (Chỉ là phần ví dụ để bạn hình dung)
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Product, PriceFilter } from '../types/product';
 import productApi from '../api/productApi';
-import categoryApi from '../api/categoryApi';
+import categoryApi from '../api/categoryApi'; // Vẫn cần để getAllCategoryIdsInBranch
 import { Category } from '../types/category';
-import './CategoryProductsPage.css'; // Import the NEW CSS file for styling
+import CategoryTreeNav from '../components/CategoryTreeNav'; // <-- Import component mới
+import './CategoryProductsPage.css';
 
 const CategoryProductsPage: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -12,47 +14,74 @@ const CategoryProductsPage: React.FC = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [allFlatCategories, setAllFlatCategories] = useState<Category[]>([]); // Để dùng cho getAllCategoryIdsInBranch
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [priceFilter, setPriceFilter] = useState<PriceFilter>({ min: null, max: null });
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await categoryApi.getAll();
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Lỗi khi tải danh mục:", error);
-      }
-    };
+  // Helper to get all category IDs including subcategories for a given parent ID
+  const getAllCategoryIdsInBranch = useCallback((categoryId: number, categories: Category[]): number[] => {
+    const ids: number[] = [categoryId];
+    const directChildren = categories.filter(cat => cat.parent_id === categoryId);
+    directChildren.forEach(child => {
+      ids.push(...getAllCategoryIdsInBranch(child.category_id, categories));
+    });
+    return Array.from(new Set(ids)); // Remove duplicates
+  }, []);
 
-    const fetchProductsByCategory = async () => {
-      if (categoryId) {
-        setLoading(true);
-        setError(null);
+  const fetchProductsForSelectedCategory = useCallback(async (selectedCatId: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const categoryIdsToFetch = getAllCategoryIdsInBranch(selectedCatId, allFlatCategories);
+      let allFetchedProducts: Product[] = [];
+
+      for (const id of categoryIdsToFetch) {
         try {
-          const response = await productApi.getByCategory(parseInt(categoryId));
-          const activeProducts = response.data.filter((product) => product.is_active); // Chỉ hiển thị sản phẩm đang hoạt động
-          setProducts(activeProducts);
-          setFilteredProducts(activeProducts); // Initialize filtered products
-          setSelectedCategory(parseInt(categoryId));
-        } catch (error: any) {
-          setError('Lỗi khi tải sản phẩm theo danh mục.');
-          console.error('Lỗi tải sản phẩm theo danh mục:', error);
-          setProducts([]);
-          setFilteredProducts([]);
-        } finally {
-          setLoading(false);
+          const response = await productApi.getByCategory(id);
+          allFetchedProducts.push(...response.data);
+        } catch (subCatError) {
+          console.warn(`Không tìm thấy sản phẩm cho danh mục con ID ${id} hoặc lỗi:`, subCatError);
         }
       }
-    };
 
-    fetchCategories();
-    fetchProductsByCategory();
-  }, [categoryId]);
+      const uniqueActiveProducts = Array.from(new Set(allFetchedProducts.map(p => p.product_id)))
+        .map(id => allFetchedProducts.find(p => p.product_id === id)!)
+        .filter((product) => product.is_active);
+
+      setProducts(uniqueActiveProducts);
+      setFilteredProducts(uniqueActiveProducts);
+      setSelectedCategory(selectedCatId);
+      setPriceFilter({ min: null, max: null }); // Reset price filter on category change
+    } catch (error: any) {
+      setError('Lỗi khi tải sản phẩm theo danh mục.');
+      console.error('Lỗi tải sản phẩm theo danh mục:', error);
+      setProducts([]);
+      setFilteredProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [allFlatCategories, getAllCategoryIdsInBranch]);
+
+  useEffect(() => {
+    const fetchAllCategories = async () => { // Tải tất cả danh mục phẳng cho getAllCategoryIdsInBranch
+      try {
+        const response = await categoryApi.getAll();
+        setAllFlatCategories(response.data);
+      } catch (error) {
+        console.error("Lỗi khi tải danh mục gốc:", error);
+      }
+    };
+    fetchAllCategories();
+  }, []);
+
+  useEffect(() => {
+    if (categoryId && allFlatCategories.length > 0) {
+      fetchProductsForSelectedCategory(parseInt(categoryId));
+    }
+  }, [categoryId, allFlatCategories, fetchProductsForSelectedCategory]);
 
   const handlePriceFilterChange = async () => {
-    if (categoryId) {
+    if (selectedCategory) {
       setLoading(true);
       setError(null);
       const minPrice: number = priceFilter.min === null ? 0 : priceFilter.min;
@@ -60,11 +89,13 @@ const CategoryProductsPage: React.FC = () => {
 
       try {
         const response = await productApi.filterByPrice(minPrice, maxPrice);
-        // Filter the response to only include products within the current category AND are active
-        const categoryFiltered = response.data.filter(
-          (product) => product.category_id === parseInt(categoryId!) && product.is_active
+
+        const categoryIdsInBranch = getAllCategoryIdsInBranch(selectedCategory, allFlatCategories);
+
+        const categoryAndPriceFiltered = response.data.filter(
+          (product) => categoryIdsInBranch.includes(product.category_id) && product.is_active
         );
-        setFilteredProducts(categoryFiltered);
+        setFilteredProducts(categoryAndPriceFiltered);
       } catch (error) {
         console.error("Lỗi khi lọc sản phẩm theo giá:", error);
         setError("Lỗi khi lọc sản phẩm theo giá.");
@@ -77,8 +108,10 @@ const CategoryProductsPage: React.FC = () => {
 
   const handleClearPriceFilter = () => {
     setPriceFilter({ min: null, max: null });
-    setFilteredProducts(products); // Reset to all products in the category (which are already active)
+    setFilteredProducts(products);
   };
+
+  const currentCategoryName = selectedCategory && allFlatCategories.find((cat) => cat.category_id === selectedCategory)?.name;
 
   if (loading) {
     return <div className="cp-loading-container">Đang tải sản phẩm...</div>;
@@ -92,21 +125,18 @@ const CategoryProductsPage: React.FC = () => {
     <div className="cp-content">
       <section className="cp-main-content">
         <section className="cp-product-categories">
-          <h3 className="cp-category-title">DANH MỤC SẢN PHẨM</h3>
-          <div className="cp-categories-list">
-            {categories.map((category) => (
-              <Link
-                key={category.category_id}
-                to={`/categories/${category.category_id}`}
-                className={`cp-category-item ${
-                  selectedCategory === category.category_id ? "cp-active" : ""
-                }`}
-                style={{ cursor: "pointer", textDecoration: "none", color: 'inherit' }}
-              >
-                {category.name}
-              </Link>
-            ))}
-          </div>
+          {/* SỬ DỤNG COMPONENT MỚI Ở ĐÂY */}
+          <CategoryTreeNav
+            selectedCategoryId={selectedCategory}
+            onCategorySelect={(catId) => {
+              // Khi một danh mục được chọn từ CategoryTreeNav
+              // Chúng ta điều hướng URL để kích hoạt lại useEffect dựa trên categoryId param
+              // Hoặc bạn có thể gọi trực tiếp fetchProductsForSelectedCategory(catId)
+              window.history.pushState({}, '', `/categories/${catId}`);
+              setSelectedCategory(catId); // Cập nhật state để CategoryTreeNav highlight đúng
+              fetchProductsForSelectedCategory(catId); // Tải sản phẩm cho danh mục mới
+            }}
+          />
           <div className="cp-price-filter-sidebar">
             <h3>LỌC THEO GIÁ</h3>
             <div className="cp-price-inputs">
@@ -140,15 +170,15 @@ const CategoryProductsPage: React.FC = () => {
         <section className="cp-product-list">
           <h2 className="cp-search-results-title">
             Sản phẩm thuộc danh mục:{" "}
-            {categoryId && categories.find((cat) => cat.category_id === parseInt(categoryId))?.name}
+            {currentCategoryName}
             {priceFilter.min !== null || priceFilter.max !== null ? (
               <>
                 <br />
                 <span>
                   Lọc theo giá: từ{" "}
-                  {priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN')+" đ" : 'bất kỳ'}{" "}
+                  {priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN') + " đ" : 'bất kỳ'}{" "}
                   đến{" "}
-                  {priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN')+" đ" : 'bất kỳ'}
+                  {priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN') + " đ" : 'bất kỳ'}
                 </span>
               </>
             ) : null}
@@ -162,7 +192,7 @@ const CategoryProductsPage: React.FC = () => {
                       <img
                         src={`http://localhost:5000${product.image_url}`}
                         alt={product.name}
-                        className="cp-product-image" // Thêm class cho ảnh
+                        className="cp-product-image"
                       />
                     </Link>
                   )}

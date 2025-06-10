@@ -2,9 +2,11 @@
 
 .pdp-content {
   padding: 20px;
-  margin-left: 200px;
-  margin-right: 200px;
   background-color: #f5f5f5;
+  margin-left: 200px; /* Thêm margin để căn giữa nội dung */
+  margin-right: 200px; /* Thêm margin để căn giữa nội dung */
+  max-width: calc(100vw - 400px); /* Đảm bảo nội dung không bị tràn khi có margin */
+  box-sizing: border-box; /* Bao gồm padding và border vào kích thước */
 }
 
 .pdp-main-content {

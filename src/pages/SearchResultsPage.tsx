@@ -1,46 +1,43 @@
-// src/pages/SearchResultsPage.tsx
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react'; 
+import { useLocation, Link } from 'react-router-dom'; 
 import productApi from '../api/productApi';
-import categoryApi from '../api/categoryApi';
+import categoryApi from '../api/categoryApi'; 
 import { Product } from '../types/product';
-import { Category } from '../types/category';
-import './SearchResultsPage.css'; // Thay đổi import CSS sang file mới
+import { Category } from '../types/category'; 
+import './SearchResultsPage.css';
+import CategoryTreeNav from '../components/CategoryTreeNav'; 
 
 const SearchResultsPage: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchTerm = queryParams.get('query');
-  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [searchResults, setSearchResults] = useState<Product[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [allFlatCategories, setAllFlatCategories] = useState<Category[]>([]); // To use for getAllCategoryIdsInBranch
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
+
+  const getAllCategoryIdsInBranch = useCallback((categoryId: number, categories: Category[]): number[] => {
+    const ids: number[] = [categoryId];
+    const directChildren = categories.filter(cat => cat.parent_id === categoryId);
+    directChildren.forEach(child => {
+      ids.push(...getAllCategoryIdsInBranch(child.category_id, categories));
+    });
+    return Array.from(new Set(ids)); // Remove duplicates
+  }, []);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchAllCategoriesFlat = async () => {
       try {
         const response = await categoryApi.getAll();
-        setCategories(response.data);
+        setAllFlatCategories(response.data);
       } catch (error) {
-        console.error("Lỗi khi tải danh mục:", error);
+        console.error("Lỗi khi tải danh mục phẳng:", error);
       }
     };
 
-    const fetchProducts = async () => {
-      try {
-        const response = await productApi.getAll();
-        const activeProducts = response.data.filter((product) => product.is_active);
-        setAllProducts(activeProducts);
-      } catch (error) {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      }
-    };
-
-    fetchCategories();
-    fetchProducts();
+    fetchAllCategoriesFlat();
   }, []);
 
   useEffect(() => {
@@ -51,36 +48,44 @@ const SearchResultsPage: React.FC = () => {
         .then(response => {
           const activeResults = response.data.filter((product: Product) => product.is_active);
           setSearchResults(activeResults);
-          setFilteredProducts(activeResults); // Initially show all active search results
+          setDisplayedProducts(activeResults); // Initially show all active search results
           setSelectedCategory(null); // Reset category selection
         })
         .catch(error => {
           setError('Có lỗi khi tìm kiếm sản phẩm.');
           console.error('Lỗi tìm kiếm:', error);
           setSearchResults([]);
-          setFilteredProducts([]);
+          setDisplayedProducts([]);
         })
         .finally(() => setLoading(false));
     } else {
-      // Nếu không có từ khóa tìm kiếm, hiển thị tất cả sản phẩm đang hoạt động
-      setSearchResults(allProducts);
-      setFilteredProducts(allProducts);
-      setSelectedCategory(null); // Reset category selection
+      setSearchResults([]);
+      setDisplayedProducts([]);
+      setSelectedCategory(null);
       setLoading(false);
     }
-  }, [searchTerm, allProducts]);
+  }, [searchTerm]); 
 
-  const handleCategoryClick = (categoryId: number) => {
-    setSelectedCategory(categoryId);
-    // Lọc trên kết quả tìm kiếm ban đầu, không phải trên tất cả sản phẩm
-    const filtered = searchResults.filter((product) => product.category_id === categoryId);
-    setFilteredProducts(filtered);
-  };
+  useEffect(() => {
+    if (selectedCategory !== null && allFlatCategories.length > 0) {
+      const categoryIdsInBranch = getAllCategoryIdsInBranch(selectedCategory, allFlatCategories);
+      const filtered = searchResults.filter(product =>
+        product.category_id !== undefined && categoryIdsInBranch.includes(product.category_id)
+      );
+      setDisplayedProducts(filtered);
+    } else {
+      setDisplayedProducts(searchResults);
+    }
+  }, [selectedCategory, searchResults, allFlatCategories, getAllCategoryIdsInBranch]);
+
+
   
-  // Hiển thị tất cả kết quả tìm kiếm khi bỏ chọn danh mục
+  const handleCategorySelectFromNav = (categoryId: number | null) => {
+    setSelectedCategory(categoryId);
+  };
+
   const handleShowAllResults = () => {
     setSelectedCategory(null);
-    setFilteredProducts(searchResults);
   };
 
   if (loading) {
@@ -94,40 +99,28 @@ const SearchResultsPage: React.FC = () => {
   return (
     <div className="srp-container">
       <section className="srp-main-content">
-        <section className="srp-product-categories">
-          <h3 className="srp-category-title">DANH MỤC SẢN PHẨM</h3>
-          <div className="srp-categories-list">
-             {/* Thêm nút "Tất cả sản phẩm" */}
+        <aside className="cp-product-categories">
+          <CategoryTreeNav
+            selectedCategoryId={selectedCategory}
+            onCategorySelect={handleCategorySelectFromNav}
+          />
+          <div className="srp-all-results-button-wrapper">
              <div
-                className={`srp-category-item ${
-                  selectedCategory === null ? "active" : ""
-                }`}
+                className={`srp-category-item ${selectedCategory === null ? "active" : ""}`}
                 style={{ cursor: "pointer", textDecoration: "none", color: 'inherit' }}
                 onClick={handleShowAllResults}
               >
-                Tất cả kết quả
               </div>
-            {categories.map((category) => (
-              <div // Thay Link bằng div để xử lý onClick lọc
-                key={category.category_id}
-                className={`srp-category-item ${
-                  selectedCategory === category.category_id ? "active" : ""
-                }`}
-                style={{ cursor: "pointer", textDecoration: "none", color: 'inherit' }}
-                onClick={() => handleCategoryClick(category.category_id)}
-              >
-                {category.name}
-              </div>
-            ))}
           </div>
-        </section>
+        </aside>
+
         <section className="srp-product-list">
           <h2 className="srp-search-results-title">
             Kết quả tìm kiếm cho: "{searchTerm}"
           </h2>
           <div className="srp-products-grid">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product) => (
                 <div key={product.product_id} className="srp-product-card">
                   {product.is_new && <div className="srp-new-badge srp-badge">NEW</div>}
                   {product.discount_price !== null && product.discount_price !== undefined && <div className="srp-sale-badge srp-badge">SALE</div>}
@@ -138,7 +131,7 @@ const SearchResultsPage: React.FC = () => {
                       <img
                         src={`http://localhost:5000${product.image_url}`}
                         alt={product.name}
-                        className="srp-product-image" 
+                        className="srp-product-image"
                       />
                     </Link>
                   )}
@@ -164,7 +157,8 @@ const SearchResultsPage: React.FC = () => {
               ))
             ) : (
               <p className="srp-no-results-message">
-                {searchTerm ? `Không tìm thấy sản phẩm nào cho "${searchTerm}".` : 'Vui lòng nhập từ khóa để tìm kiếm.'}
+                {searchTerm ? `Không tìm thấy sản phẩm nào cho "${searchTerm}"` : 'Vui lòng nhập từ khóa để tìm kiếm.'}
+                {selectedCategory && searchResults.length > 0 ? ` trong danh mục đã chọn.` : '.'}
               </p>
             )}
           </div>

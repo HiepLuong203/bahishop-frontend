@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Category } from "../types/category";
 import { Product, PriceFilter } from "../types/product";
+import { Category } from "../types/category";
 import categoryApi from "../api/categoryApi";
 import productApi from "../api/productApi";
-import './ProductPage.css'; // Vẫn import file CSS này
-import Pagination from "../components/Pagination"; // Import Pagination component
+import './ProductPage.css';
+import Pagination from "../components/Pagination";
+import CategoryTreeNav from "../components/CategoryTreeNav"; 
+
 
 const ProductPage: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [allFlatCategories, setAllFlatCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -17,13 +19,22 @@ const ProductPage: React.FC = () => {
   const [priceFilter, setPriceFilter] = useState<PriceFilter>({ min: null, max: null });
   const navigate = useNavigate();
 
+  const getAllCategoryIdsInBranch = useCallback((categoryId: number, categories: Category[]): number[] => {
+    const ids: number[] = [categoryId];
+    const directChildren = categories.filter(cat => cat.parent_id === categoryId);
+    directChildren.forEach(child => {
+      ids.push(...getAllCategoryIdsInBranch(child.category_id, categories));
+    });
+    return Array.from(new Set(ids));
+  }, []);
+
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchAllCategoriesFlat = async () => {
       try {
         const response = await categoryApi.getAll();
-        setCategories(response.data);
+        setAllFlatCategories(response.data);
       } catch (error) {
-        console.error("Lỗi khi tải danh mục:", error);
+        console.error("Lỗi khi tải danh mục phẳng:", error);
       }
     };
 
@@ -38,38 +49,48 @@ const ProductPage: React.FC = () => {
       }
     };
 
-    fetchCategories();
+    fetchAllCategoriesFlat();
     fetchInitialProducts();
   }, []);
 
   useEffect(() => {
-    const fetchCategoryProducts = async () => {
-      try {
-        if (selectedCategory) {
-          const response = await productApi.getByCategory(selectedCategory);
-          setFilteredProducts(response.data);
-          setCurrentPage(1);
-        } else {
-          setFilteredProducts(products); // Reset to all products when no category is selected
-          setCurrentPage(1);
+    const applyCategoryFilter = async () => {
+      if (selectedCategory !== null) {
+        const categoryIdsToFetch = getAllCategoryIdsInBranch(selectedCategory, allFlatCategories);
+        let allFetchedProducts: Product[] = [];
+
+        for (const id of categoryIdsToFetch) {
+          try {
+            const response = await productApi.getByCategory(id);
+            allFetchedProducts.push(...response.data);
+          } catch (subCatError) {
+            console.warn(`Không tìm thấy sản phẩm cho danh mục con ID ${id} hoặc lỗi:`, subCatError);
+          }
         }
-      } catch (error) {
-        console.error("Lỗi khi tải sản phẩm theo danh mục:", error);
-        setFilteredProducts([]);
+        const uniqueActiveProducts = Array.from(new Set(allFetchedProducts.map(p => p.product_id)))
+          .map(id => allFetchedProducts.find(p => p.product_id === id)!)
+          .filter((product) => product.is_active);
+
+        setFilteredProducts(uniqueActiveProducts);
+      } else {
+        setFilteredProducts(products);
       }
+      setCurrentPage(1);
     };
 
-    fetchCategoryProducts();
-  }, [selectedCategory, products]); // products is a dependency because 'else' branch depends on it
+    if (allFlatCategories.length > 0 || selectedCategory === null) {
+      applyCategoryFilter();
+    }
+  }, [selectedCategory, products, allFlatCategories, getAllCategoryIdsInBranch]);
 
   const totalItems = filteredProducts.length;
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
-  const handleCategoryClick = (categoryId: number | null) => {
+  const handleCategorySelectFromNav = (categoryId: number | null) => {
     setSelectedCategory(categoryId);
-    setPriceFilter({ min: null, max: null }); // Clear price filter when changing category
+    setPriceFilter({ min: null, max: null });
     setCurrentPage(1);
     if (categoryId) {
       navigate(`/categories/${categoryId}`);
@@ -79,7 +100,7 @@ const ProductPage: React.FC = () => {
   };
 
   const handlePriceFilterChange = async () => {
-    setSelectedCategory(null); // Clear category selection when applying price filter
+    setSelectedCategory(null);
     setCurrentPage(1);
 
     const minPrice: number = priceFilter.min === null ? 0 : priceFilter.min;
@@ -89,8 +110,9 @@ const ProductPage: React.FC = () => {
 
     try {
       const response = await productApi.filterByPrice(minPrice, maxPrice);
-      setFilteredProducts(response.data);
-      console.log("Filtered products updated:", response.data);
+      const activeAndPriceFiltered = response.data.filter(product => product.is_active);
+      setFilteredProducts(activeAndPriceFiltered);
+      console.log("Filtered products updated:", activeAndPriceFiltered);
     } catch (error) {
       console.error("Lỗi khi lọc sản phẩm theo giá:", error);
       setFilteredProducts([]);
@@ -99,39 +121,27 @@ const ProductPage: React.FC = () => {
 
   const handleClearPriceFilter = () => {
     setPriceFilter({ min: null, max: null });
-    setSelectedCategory(null); // Clear category selection as well
+    setSelectedCategory(null);
     setCurrentPage(1);
-    setFilteredProducts(products); // Reset to original products
+    setFilteredProducts(products);
   };
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
+  const currentCategoryName = selectedCategory
+    ? allFlatCategories.find((cat) => cat.category_id === selectedCategory)?.name
+    : null;
+
   return (
     <div className="pp-content">
       <section className="pp-main-content">
-        <section className="pp-product-categories">
-          <h3 className="pp-category-title">DANH MỤC SẢN PHẨM</h3>
-          <div className="pp-categories-list">
-            <div
-              className={`pp-category-item ${selectedCategory === null ? "pp-active" : ""}`}
-              style={{ cursor: "pointer", textDecoration: "none", color: 'inherit' }}
-              onClick={() => handleCategoryClick(null)}
-            >
-              Tất cả sản phẩm
-            </div>
-            {categories.map((category) => (
-              <div
-                key={category.category_id}
-                className={`pp-category-item ${selectedCategory === category.category_id ? "pp-active" : ""}`}
-                style={{ cursor: "pointer", textDecoration: "none", color: 'inherit' }}
-                onClick={() => handleCategoryClick(category.category_id)}
-              >
-                {category.name}
-              </div>
-            ))}
-          </div>
+        <aside className="cp-product-categories"> 
+          <CategoryTreeNav
+            selectedCategoryId={selectedCategory}
+            onCategorySelect={handleCategorySelectFromNav}
+          />
           <div className="pp-price-filter-sidebar">
             <h3>LỌC THEO GIÁ</h3>
             <div className="pp-price-inputs">
@@ -151,50 +161,58 @@ const ProductPage: React.FC = () => {
               <button onClick={handleClearPriceFilter}>Bỏ lọc</button>
             </div>
           </div>
-        </section>
+        </aside>
 
         <section className="pp-product-list">
           <h2>
             {selectedCategory
-              ? `Sản phẩm thuộc danh mục: ${
-                  categories.find((cat) => cat.category_id === selectedCategory)?.name
-                }`
+              ? `Sản phẩm thuộc danh mục: ${currentCategoryName}`
               : priceFilter.min !== null || priceFilter.max !== null
                 ? `Sản phẩm có giá từ ${priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN')+' đ' : '0 đ'} đến ${priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN')+' đ' : 'bất kỳ'}`
                 : 'Tất cả sản phẩm'}
           </h2>
           <div className="pp-products-grid">
-            {currentProducts.map((product) => (
-              <div key={product.product_id} className="pp-product-card">
-                {product.image_url && (
-                  <Link to={`/product/${product.product_id}`}>
-                    <img
-                      src={`http://localhost:5000${product.image_url}`}
-                      alt={product.name}
-                      className="pp-product-image" // Thêm class cho ảnh
-                    />
-                  </Link>
-                )}
-                <h3>{product.name}</h3>
-                <div className="pp-price-container">
-                  {product.discount_price !== null &&
-                  product.discount_price !== undefined ? (
-                    <>
-                      <p className="pp-original-price">
+            {currentProducts.length > 0 ? (
+              currentProducts.map((product) => (
+                <div key={product.product_id} className="pp-product-card">
+                  {product.image_url && (
+                    <Link to={`/product/${product.product_id}`}>
+                      <img
+                        src={`http://localhost:5000${product.image_url}`}
+                        alt={product.name}
+                        className="pp-product-image"
+                      />
+                    </Link>
+                  )}
+                  <h3>{product.name}</h3>
+                  <div className="pp-price-container">
+                    {product.discount_price !== null &&
+                    product.discount_price !== undefined ? (
+                      <>
+                        <p className="pp-original-price">
+                          Giá: {Number(product.price).toLocaleString('vi-VN')} đ
+                        </p>
+                        <p className="pp-discount-price">
+                          Khuyến mãi: {Number(product.discount_price).toLocaleString('vi-VN')} đ
+                        </p>
+                      </>
+                    ) : (
+                      <p className="pp-regular-price">
                         Giá: {Number(product.price).toLocaleString('vi-VN')} đ
                       </p>
-                      <p className="pp-discount-price">
-                        Khuyến mãi: {Number(product.discount_price).toLocaleString('vi-VN')} đ
-                      </p>
-                    </>
-                  ) : (
-                    <p className="pp-regular-price">
-                      Giá: {Number(product.price).toLocaleString('vi-VN')} đ
-                    </p>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="pp-no-products-message">
+                Không có sản phẩm nào
+                {selectedCategory ? ` trong danh mục "${currentCategoryName}"` : ''}
+                {priceFilter.min !== null || priceFilter.max !== null
+                  ? ` trong khoảng giá từ ${priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN')+' đ' : '0 đ'} đến ${priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN')+' đ' : 'bất kỳ'}`
+                  : ''}.
+              </p>
+            )}
           </div>
 
           {filteredProducts.length > productsPerPage && (

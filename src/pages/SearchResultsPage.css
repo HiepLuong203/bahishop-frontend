@@ -3,12 +3,17 @@
 .srp-container {
   padding: 20px;
   background-color: #f5f5f5;
-  margin-left: 200px;
-  margin-right: 200px;
-  max-width: calc(100vw - 400px);
-  box-sizing: border-box;
+  margin-left: 200px; /* Thêm margin để căn giữa nội dung */
+  margin-right: 200px; /* Thêm margin để căn giữa nội dung */
+  max-width: calc(100vw - 400px); /* Đảm bảo nội dung không bị tràn khi có margin */
+  box-sizing: border-box; /* Bao gồm padding và border vào kích thước */
 }
-
+.srp-main-content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start; /* Quan trọng để sidebar và danh sách sản phẩm căn trên */
+  min-width: 1145px; /* Thêm dòng này: Tổng chiều rộng tối thiểu cho desktop */
+}
 .srp-loading-message,
 .srp-error-message {
   text-align: center;

@@ -4,8 +4,7 @@ import { Category, CategoryInput } from '../../types/category';
 import categoryApi from '../../api/categoryApi';
 import './CategoryFormModal.css'; // Sẽ tạo file CSS này
 
-// Hàm kiểm tra xem 'child' có phải là con cháu của 'parent' không
-// Hàm này đã được di chuyển ra ngoài component để tránh tạo lại không cần thiết
+// 'child' có phải là con cháu của 'parent' không, gọi ở ngoài tránh lặp
 const isDescendant = (potentialChild: Category, potentialParent: Category | null, allCats: Category[]): boolean => {
     if (!potentialParent) return false;
     let current = potentialChild;
@@ -74,9 +73,6 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ category, onClose
     }
   };
 
-  // Lọc ra các danh mục không phải là chính nó và không phải là con của nó
-  // để tránh vòng lặp khi chọn parent_id
-  // eslint-disable-next-line no-loop-func
   const availableParentCategories = allCategories.filter(cat =>
     cat.category_id !== category?.category_id &&
     !isDescendant(cat, category, allCategories)

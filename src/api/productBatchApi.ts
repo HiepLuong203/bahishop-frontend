@@ -13,7 +13,7 @@ const productBatchApi = {
       params.productId = productId;
     }
     const response = await axiosClient.get('/productbatch', { params }); // Đúng theo tên bạn nói
-    return response.data; // Luôn trả về .data từ axios response
+    return response.data; 
   },
 
   // Lấy lô sản phẩm theo ID
@@ -43,7 +43,7 @@ const productBatchApi = {
     if (includeExpired !== undefined) {
       params.includeExpired = includeExpired;
     }
-    const response = await axiosClient.get('/productbatch/expiring', { params }); // Đúng theo tên bạn nói
+    const response = await axiosClient.get('/productbatch/expiring', { params });
     return response.data;
   },
 

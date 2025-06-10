@@ -142,6 +142,7 @@ const AdminProductsPage: React.FC = () => {
                 <th>ID</th>
                 <th>Tên</th>
                 <th>Hình ảnh</th>
+                <th>Đơn vị</th>
                 <th>Giá bán</th>
                 <th>Giá khuyến mãi</th>
                 <th>Trạng thái</th>
@@ -162,6 +163,7 @@ const AdminProductsPage: React.FC = () => {
                       />
                     )}
                   </td>
+                  <td>{product.unit}</td>
                   <td>{Number(product.price).toLocaleString('vi-VN')}</td>
                   <td>
                     {product.discount_price !== null && product.discount_price > 0

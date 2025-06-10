@@ -7,6 +7,7 @@ import { Product } from '../../types/product';
 import ProductBatchFormModal from '../../components/admin/ProductBatchFormModal';
 import ProductBatchDetailsModal from '../../components/admin/ProductBatchDetailsModal';
 import ConfirmationModal from '../../components/admin/ConfirmationModal'; // Giả sử bạn có component này
+import Pagination from '../../components/Pagination'; 
 import './ProductBatchManagementPage.css';
 
 const ProductBatchManagementPage: React.FC = () => {
@@ -26,6 +27,10 @@ const ProductBatchManagementPage: React.FC = () => {
   const [filterDaysToExpiry, setFilterDaysToExpiry] = useState<number | ''>('');
   const [includeExpiredFilter, setIncludeExpiredFilter] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // --- Pagination states ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20); // Display 10 batches per page
 
   const fetchBatches = useCallback(async () => {
     setLoading(true);
@@ -50,6 +55,7 @@ const ProductBatchManagementPage: React.FC = () => {
       });
 
       setBatches(filteredBySearch);
+      setCurrentPage(1); // Reset to first page when new filters are applied or fetched
     } catch (err: any) {
       console.error('Lỗi khi tải lô sản phẩm:', err);
       setError(err.response?.data?.error || 'Không thể tải dữ liệu lô sản phẩm.');
@@ -92,6 +98,7 @@ const ProductBatchManagementPage: React.FC = () => {
   const handleSubmitSuccess = () => {
     handleModalClose();
     fetchBatches(); // Refresh data after successful submission
+    setCurrentPage(1); // Reset to first page after adding/editing
   };
 
   const handleUpdateExpiredBatches = async () => {
@@ -138,6 +145,15 @@ const ProductBatchManagementPage: React.FC = () => {
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false); // For global actions
+
+  // --- Pagination Logic ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentBatches = batches.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="product-batch-management-page">
@@ -215,7 +231,7 @@ const ProductBatchManagementPage: React.FC = () => {
               </label>
             )}
           </div>
-          
+
           <div className="filter-group">
             <label htmlFor="search-term">Tìm kiếm (Mã lô, SP):</label>
             <input
@@ -266,7 +282,8 @@ const ProductBatchManagementPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {batches.map((batch) => (
+                  {/* Displaying only current page's batches */}
+                  {currentBatches.map((batch) => (
                     <tr key={batch.batch_id}>
                       <td>{batch.batch_id}</td>
                       <td>{batch.product?.name || 'N/A'}</td>
@@ -292,6 +309,13 @@ const ProductBatchManagementPage: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+              {/* Pagination component */}
+              <Pagination
+                totalItems={batches.length}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
             </div>
           )}
         </>
