@@ -7,8 +7,8 @@ const Footer: React.FC = () => {
       <div className="footer-top">
         <div className="footer-info">
           <h3>Liên hệ</h3>
-          <p>Địa chỉ: Khu tự trị BaHi - Hà Nội</p>
-          <p>Điện thoại: 0367788999</p>
+          <p>37 Tô Hiệu - Thường Tín - Hà Nội</p>
+          <p>Điện thoại: 0364 797 669</p>
           <p>Email: bahishop@gmail.com</p>
         </div>
         <div className="footer-social">
@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
             Facebook: <a href="https://web.facebook.com/luongbahiep.nk">BAHISHOP</a>
           </p>
           <p>
-            Zalo: <a href="https://web.facebook.com/luongbahiep.nk">0364797777</a>
+            Zalo: <a href="https://zalo.me/0364797669">0364797777</a>
           </p>
         </div>
       </div>

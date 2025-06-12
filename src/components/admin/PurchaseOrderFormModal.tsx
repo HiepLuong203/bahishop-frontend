@@ -209,16 +209,16 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
 
   if (loadingData) {
     return (
-      <div className="po-form-overlay"> {/* Đã đổi tên class */}
-        <div className="po-form-content">Đang tải dữ liệu form...</div> {/* Đã đổi tên class */}
+      <div className="po-form-overlay"> 
+        <div className="po-form-content">Đang tải dữ liệu form...</div> 
       </div>
     );
   }
 
   if (suppliers.length === 0) {
     return (
-        <div className="po-form-overlay"> {/* Đã đổi tên class */}
-            <div className="po-form-content"> {/* Đã đổi tên class */}
+        <div className="po-form-overlay">
+            <div className="po-form-content"> 
                 <p className="po-form-error">Không có nhà cung cấp nào để tạo đơn nhập hàng. Vui lòng thêm nhà cung cấp trước.</p> {/* Đã đổi tên class */}
                 <button type="button" className="admin-button secondary" onClick={onClose}>Đóng</button>
             </div>
@@ -228,8 +228,8 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
 
   if (products.length === 0 && !isEditingExistingOrder) {
     return (
-        <div className="po-form-overlay"> {/* Đã đổi tên class */}
-            <div className="po-form-content"> {/* Đã đổi tên class */}
+        <div className="po-form-overlay"> 
+            <div className="po-form-content"> 
                 <p className="po-form-error">Không có sản phẩm nào để thêm vào đơn nhập hàng. Vui lòng thêm sản phẩm trước.</p> {/* Đã đổi tên class */}
                 <button type="button" className="admin-button secondary" onClick={onClose}>Đóng</button>
             </div>
@@ -238,18 +238,18 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
   }
   
   return (
-    <div className="po-form-overlay"> {/* Đã đổi tên class */}
-      <div className="po-form-content"> {/* Đã đổi tên class */}
+    <div className="po-form-overlay"> 
+      <div className="po-form-content"> 
         <h2 className="po-form-title">{isEditingExistingOrder ? 'Chỉnh sửa Đơn nhập hàng' : 'Tạo Đơn nhập hàng mới'}</h2> {/* Thêm class cho tiêu đề */}
         {isEditingExistingOrder && (
-            <p className="po-form-warning-message"> {/* Đã đổi tên class */}
+            <p className="po-form-warning-message"> 
                 **Lưu ý: Chỉ có thể chỉnh sửa thông tin chung của đơn hàng. Không thể thay đổi chi tiết sản phẩm và lô hàng để tránh sai số với kho.**
             </p>
         )}
         <form onSubmit={handleSubmit}>
-          <div className="po-form-section"> {/* Đã đổi tên class */}
-            <h3 className="po-form-subtitle">Thông tin Đơn hàng</h3> {/* Thêm class cho tiêu đề con */}
-            <div className="po-form-group"> {/* Đã đổi tên class */}
+          <div className="po-form-section"> 
+            <h3 className="po-form-subtitle">Thông tin Đơn hàng</h3>
+            <div className="po-form-group"> 
               <label htmlFor="supplier_id">Nhà cung cấp:</label>
               <select
                 id="supplier_id"
@@ -264,7 +264,7 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
                 ))}
               </select>
             </div>
-            <div className="po-form-group"> {/* Đã đổi tên class */}
+            <div className="po-form-group"> 
               <label htmlFor="order_date">Ngày đặt hàng:</label>
               <input
                 type="date"
@@ -275,7 +275,7 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
                 required
               />
             </div>
-            <div className="po-form-group"> {/* Đã đổi tên class */}
+            <div className="po-form-group"> 
               <label htmlFor="note">Ghi chú:</label>
               <textarea
                 id="note"
@@ -287,14 +287,14 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
             </div>
           </div>
 
-          <div className="po-form-section"> {/* Đã đổi tên class */}
-            <h3 className="po-form-subtitle">Sản phẩm trong Đơn hàng</h3> {/* Thêm class cho tiêu đề con */}
+          <div className="po-form-section"> 
+            <h3 className="po-form-subtitle">Sản phẩm trong Đơn hàng</h3> 
             {isEditingExistingOrder && orderItems.length === 0 && (
               <p>Đơn hàng này không có chi tiết sản phẩm.</p>
             )}
             {orderItems.map((item, index) => (
-              <div key={index} className="po-form-item-group"> {/* Đã đổi tên class */}
-                <div className="po-form-group"> {/* Đã đổi tên class */}
+              <div key={index} className="po-form-item-group"> 
+                <div className="po-form-group">
                   <label htmlFor={`product_id_${index}`}>Sản phẩm:</label>
                   <select
                     id={`product_id_${index}`}
@@ -310,7 +310,7 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
                     ))}
                   </select>
                 </div>
-                <div className="po-form-group"> {/* Đã đổi tên class */}
+                <div className="po-form-group"> 
                   <label htmlFor={`quantity_${index}`}>Số lượng:</label>
                   <input
                     type="number"
@@ -323,7 +323,7 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
                     disabled={isEditingExistingOrder} 
                   />
                 </div>
-                <div className="po-form-group"> {/* Đã đổi tên class */}
+                <div className="po-form-group">
                   <label htmlFor={`unit_price_${index}`}>Đơn giá nhập:</label>
                   <input
                     type="number"
@@ -337,7 +337,7 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
                     disabled={isEditingExistingOrder} 
                   />
                 </div>
-                <div className="po-form-group"> {/* Đã đổi tên class */}
+                <div className="po-form-group"> 
                   <label htmlFor={`batch_code_${index}`}>Mã lô:</label>
                   <input
                     type="text"
@@ -349,7 +349,7 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
                     disabled={isEditingExistingOrder} 
                   />
                 </div>
-                <div className="po-form-group"> {/* Đã đổi tên class */}
+                <div className="po-form-group">
                   <label htmlFor={`manufacture_date_${index}`}>Ngày SX:</label>
                   <input
                     type="date"
@@ -360,7 +360,7 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
                     disabled={isEditingExistingOrder} 
                   />
                 </div>
-                <div className="po-form-group"> {/* Đã đổi tên class */}
+                <div className="po-form-group"> 
                   <label htmlFor={`expiry_date_${index}`}>Hạn sử dụng:</label>
                   <input
                     type="date"
@@ -387,8 +387,8 @@ const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({ purchas
             )}
           </div>
 
-          {formError && <p className="po-form-error">{formError}</p>} {/* Đã đổi tên class */}
-          <div className="po-form-actions"> {/* Đã đổi tên class */}
+          {formError && <p className="po-form-error">{formError}</p>} 
+          <div className="po-form-actions">
             <button type="submit" className="admin-button primary" disabled={isSubmitting}>
               {isSubmitting ? 'Đang lưu...' : (isEditingExistingOrder ? 'Cập nhật Đơn hàng' : 'Tạo Đơn hàng')}
             </button>

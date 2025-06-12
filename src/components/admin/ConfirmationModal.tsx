@@ -1,6 +1,6 @@
 // src/components/common/ConfirmationModal.tsx
 import React from 'react';
-import './ConfirmationModal.css'; // Tạo file CSS riêng cho nó
+import './ConfirmationModal.css'; 
 
 interface ConfirmationModalProps {
   message: string;

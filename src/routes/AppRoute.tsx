@@ -9,6 +9,7 @@ import ProductDetailPage from "../pages/ProductDetailPage";
 import ProductsPage from "../pages/ProductsPage"; 
 import LoginPage from "../pages/LoginPage"; 
 import RegisterPage from "../pages/RegisterPage"; 
+import ResetPasswordPage from "../pages/ResetPasswordPage";
 import ChangePasswordPage from "../pages/ChangePasswordPage"
 import ProfilePage from "../pages/ProfilePage";
 import CartPage from "../pages/CartPage";
@@ -69,6 +70,12 @@ const AppRouter = () => {
         <Route path="/dangky" element={
             <MainLayout>
               <RegisterPage />
+            </MainLayout>
+          }
+        />
+        <Route path="/reset-password" element={
+            <MainLayout>
+              <ResetPasswordPage />
             </MainLayout>
           }
         />

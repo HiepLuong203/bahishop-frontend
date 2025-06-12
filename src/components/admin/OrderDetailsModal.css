@@ -1,5 +1,4 @@
 /* src/components/admin/OrderDetailsModal.css */
-/* Reusing modal-overlay and modal-content styles from other modals */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -10,7 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1001; /* Cao hơn modal form nếu có */
+  z-index: 1001; 
 }
 
 .modal-content {
@@ -19,7 +18,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   width: 90%;
-  max-width: 800px; /* Rộng hơn để chứa bảng chi tiết */
+  max-width: 800px; 
   max-height: 90vh;
   overflow-y: auto;
   position: relative;

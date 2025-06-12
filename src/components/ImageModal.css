@@ -1,0 +1,122 @@
+/* src/components/ImageModal.css */
+
+.pdp-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8); /* Nền tối mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Đảm bảo modal nằm trên cùng */
+  backdrop-filter: blur(5px); /* Hiệu ứng làm mờ nền (tùy chọn) */
+}
+
+.pdp-image-modal-content {
+  position: relative;
+  /* Giới hạn kích thước của khung chứa ảnh trong modal */
+  max-width: 500px; /* Cố định chiều rộng tối đa */
+  max-height: 500px; /* Cố định chiều cao tối đa */
+  width: auto; /* Cho phép tự động điều chỉnh chiều rộng */
+  height: auto; /* Cho phép tự động điều chỉnh chiều cao */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Nếu bạn muốn khung chứa ảnh có nền, bạn có thể thêm: */
+  /* background-color: white; */
+  /* padding: 10px; */
+  /* border-radius: 8px; */
+  /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); */
+}
+
+.pdp-image-modal-img {
+  /* Đảm bảo ảnh không vượt quá kích thước của parent (.pdp-image-modal-content) */
+  max-width: 100%;
+  max-height: 100%;
+  /* Giữ nguyên tỷ lệ khung hình và đảm bảo toàn bộ ảnh hiển thị trong khung */
+  object-fit: contain; /* Rất quan trọng để giữ tỷ lệ và vừa vặn */
+  /* Không cần border-radius và box-shadow ở đây nữa nếu đã có trên .pdp-image-modal-content */
+  border-radius: 8px; /* Giữ bo góc cho ảnh nếu bạn muốn */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Giữ bóng đổ cho ảnh nếu bạn muốn */
+}
+
+
+/* --- Các style khác giữ nguyên --- */
+
+.pdp-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.pdp-image-modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2.5em;
+  cursor: pointer;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+  z-index: 1001;
+}
+
+.pdp-image-modal-nav:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.pdp-image-modal-nav--prev {
+  left: 20px;
+}
+
+.pdp-image-modal-nav--next {
+  right: 20px;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+  /* Điều chỉnh kích thước khung ảnh cho màn hình nhỏ hơn nếu cần */
+  .pdp-image-modal-content {
+    max-width: 90vw; /* Cho phép chiếm 90% chiều rộng viewport */
+    max-height: 80vh; /* Cho phép chiếm 80% chiều cao viewport */
+  }
+
+  .pdp-image-modal-close {
+    top: 10px;
+    right: 10px;
+    font-size: 1.8em;
+    width: 35px;
+    height: 35px;
+  }
+  .pdp-image-modal-nav {
+    font-size: 2em;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+  .pdp-image-modal-nav--prev {
+    left: 10px;
+  }
+  .pdp-image-modal-nav--next {
+    right: 10px;
+  }
+}

@@ -58,7 +58,6 @@ const orderApi = {
     }
     return axiosClient.put(url, body);
 },
-  // Các API khác liên quan đến order
 };
 
 export default orderApi;

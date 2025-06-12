@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Category, CategoryInput } from '../../types/category';
 import categoryApi from '../../api/categoryApi';
-import './CategoryFormModal.css'; // Sẽ tạo file CSS này
+import './CategoryFormModal.css';
 
 // 'child' có phải là con cháu của 'parent' không, gọi ở ngoài tránh lặp
 const isDescendant = (potentialChild: Category, potentialParent: Category | null, allCats: Category[]): boolean => {
@@ -17,7 +17,7 @@ const isDescendant = (potentialChild: Category, potentialParent: Category | null
     return false;
 };
 interface CategoryFormModalProps {
-  category: Category | null; // Null nếu thêm mới, Category object nếu sửa
+  category: Category | null; // Danh mục hiện tại để chỉnh sửa, null nếu thêm mới
   onClose: () => void;
   onSubmitSuccess: () => void;
   allCategories: Category[]; // Danh sách tất cả danh mục để chọn parent_id
