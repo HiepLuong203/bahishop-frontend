@@ -10,7 +10,7 @@ function App() {
       <SocialIcons  
         phoneNumber="0364797777" 
         messengerLink="https://web.facebook.com/luongbahiep.nk" 
-        zaloLink="https://zalo.me/your_zalo_id" 
+        zaloLink="https://zalo.me/0364797669" 
       />
       <BackToTop />
     </div>

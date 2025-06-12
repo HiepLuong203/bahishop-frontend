@@ -5,8 +5,8 @@ import { ProductImage } from '../../types/productImage';
 import './ProductImageFormModal.css';
 
 interface ProductImageFormModalProps {
-  productId: number; // ID của sản phẩm mà ảnh thuộc về
-  image: ProductImage | null; // Null nếu thêm mới, ProductImage object nếu sửa
+  productId: number;
+  image: ProductImage | null;
   onClose: () => void;
   onSubmitSuccess: () => void;
 }
@@ -16,26 +16,30 @@ const ProductImageFormModal: React.FC<ProductImageFormModalProps> = ({ productId
   const [displayOrder, setDisplayOrder] = useState<number>(image?.display_order || 0);
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(null); // Để hiển thị ảnh xem trước khi sửa
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (image) {
       setDisplayOrder(image.display_order);
-      setPreviewImage(`http://localhost:5000${image.image_url}`);
+      setPreviewImages([`http://localhost:5000${image.image_url}`]);
     } else {
-      setDisplayOrder(0); // Reset cho thêm mới
-      setPreviewImage(null);
+      setDisplayOrder(0);
+      setPreviewImages([]);
     }
-  }, [image]);
+    return () => {
+      // Clean up object URLs
+      previewImages.forEach(URL.revokeObjectURL);
+    };
+  }, [image, previewImages]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedFiles(e.target.files);
-      if (e.target.files.length > 0) {
-        setPreviewImage(URL.createObjectURL(e.target.files[0]));
-      } else {
-        setPreviewImage(null);
-      }
+      const newPreviews = Array.from(e.target.files).map(file => URL.createObjectURL(file));
+      setPreviewImages(newPreviews);
+    } else {
+      setPreviewImages([]);
+      setSelectedFiles(null);
     }
   };
 
@@ -50,64 +54,65 @@ const ProductImageFormModal: React.FC<ProductImageFormModalProps> = ({ productId
 
     try {
       if (image) {
-        // Chế độ chỉnh sửa ảnh
+        // Edit mode
         if (!selectedFiles && displayOrder === image.display_order) {
-            setFormError('Không có thay đổi nào để cập nhật.');
-            setIsSubmitting(false);
-            return;
+          setFormError('No changes to update.');
+          setIsSubmitting(false);
+          return;
         }
         const fileToUpload = selectedFiles ? selectedFiles[0] : undefined;
         const dataToUpdate = {
-            display_order: displayOrder,
-            file: fileToUpload,
+          display_order: displayOrder,
+          file: fileToUpload,
         };
         await productImageApi.updateProductImage(image.image_id, dataToUpdate);
-        alert('Cập nhật ảnh sản phẩm thành công!');
-
+        alert('Product image updated successfully!');
       } else {
-        // Chế độ thêm mới ảnh
+        // Add mode
         if (!selectedFiles || selectedFiles.length === 0) {
-          setFormError('Vui lòng chọn ít nhất một ảnh.');
+          setFormError('Please select at least one image.');
           setIsSubmitting(false);
           return;
         }
         const filesArray = Array.from(selectedFiles);
         await productImageApi.createProductImages(productId, filesArray);
-        alert('Thêm ảnh sản phẩm thành công!');
+        alert('Product images added successfully!');
       }
       onSubmitSuccess();
     } catch (err: any) {
-      console.error('Lỗi khi submit form ảnh sản phẩm:', err);
-      setFormError(err.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+      console.error('Error submitting product image form:', err);
+      setFormError(err.response?.data?.message || 'An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>{image ? 'Chỉnh sửa Ảnh Sản phẩm' : `Thêm Ảnh cho Sản phẩm ID: ${productId}`}</h2>
+    <div className="pim-modal-overlay">
+      <div className="pim-modal-content">
+        <h2>{image ? 'Edit Product Image' : `Add Images for Product ID: ${productId}`}</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="image_file">{image ? 'Chọn ảnh mới (nếu muốn thay đổi):' : 'Chọn ảnh:'}</label>
+          <div className="pim-form-group">
+            <label htmlFor="image_file">{image ? 'Select new image (optional):' : 'Select images:'}</label>
             <input
               type="file"
               id="image_file"
               name="image_file"
               onChange={handleFileChange}
-              multiple={!image} // Cho phép chọn nhiều file khi thêm mới
+              multiple
               accept="image/*"
-              required={!image} // Bắt buộc chọn file khi thêm mới
+              required={!image}
             />
-            {previewImage && (
-              <div className="image-preview-container">
-                <img src={previewImage} alt="Preview" className="image-preview" />
+            {previewImages.length > 0 && (
+              <div className="pim-image-preview-container">
+                {previewImages.map((preview, index) => (
+                  <img key={index} src={preview} alt={`Preview ${index}`} className="pim-image-preview" />
+                ))}
               </div>
             )}
           </div>
-          <div className="form-group">
-            <label htmlFor="display_order">Thứ tự hiển thị:</label>
+          <div className="pim-form-group">
+            <label htmlFor="display_order">Display Order:</label>
             <input
               type="number"
               id="display_order"
@@ -118,14 +123,14 @@ const ProductImageFormModal: React.FC<ProductImageFormModalProps> = ({ productId
             />
           </div>
 
-          {formError && <p className="form-error">{formError}</p>}
+          {formError && <p className="pim-form-error">{formError}</p>}
 
-          <div className="form-actions">
-            <button type="submit" className="admin-button primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Đang xử lý...' : (image ? 'Cập nhật' : 'Thêm')}
+          <div className="pim-form-actions">
+            <button type="submit" className="pim-admin-button pim-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : (image ? 'Update' : 'Add')}
             </button>
-            <button type="button" className="admin-button secondary" onClick={onClose} disabled={isSubmitting}>
-              Hủy
+            <button type="button" className="pim-admin-button pim-secondary" onClick={onClose} disabled={isSubmitting}>
+              Cancel
             </button>
           </div>
         </form>

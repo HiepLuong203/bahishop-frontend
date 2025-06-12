@@ -4,11 +4,12 @@ import productApi from '../api/productApi';
 import { ProductWithDetails } from '../types/product';
 import './ProductDetailPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons'; // Không cần faChevronLeft/Right ở đây nữa
 import cartApi from '../api/cartApi';
 import authApi from '../api/authApi';
 import ProductReviews from '../components/ProductReviews';
 import CategoryTreeNav from '../components/CategoryTreeNav';
+import ImageModal from '../components/ImageModal'; // Import component ImageModal mới
 
 const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: any }>();
@@ -17,7 +18,7 @@ const ProductDetailPage: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // Still useful for highlighting
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [mainImageUrl, setMainImageUrl] = useState<string>('');
   const [mainImageId, setMainImageId] = useState<number | null>(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -27,34 +28,60 @@ const ProductDetailPage: React.FC = () => {
   const [isUserActive, setIsUserActive] = useState<boolean | null>(null);
   const navigate = useNavigate();
 
+  const [showImageModal, setShowImageModal] = useState(false);
+
+  // Tạo một mảng chứa tất cả các URL ảnh có tiền tố
+  const [allImagesWithPrefix, setAllImagesWithPrefix] = useState<Array<{ imageUrl: string; imageId: number | null }>>([]);
+
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const productData = await productApi.getById(parseInt(productId, 10));
         const productWithImages: ProductWithDetails = productData.data;
         setProduct(productWithImages);
-        // Set the selected category based on the product's category_id
+
         if (productWithImages.category_id) {
           setSelectedCategory(productWithImages.category_id);
         }
 
+        const imagesToProcess: Array<{ imageUrl: string; imageId: number | null; isPrimary?: boolean }> = [];
+
+        // Thêm ảnh chính từ product.image_url nếu có
+        if (productWithImages.image_url) {
+          imagesToProcess.push({ imageUrl: productWithImages.image_url, imageId: null, isPrimary: true });
+        }
+        // Thêm ảnh từ mảng product.images
+        if (productWithImages.images && productWithImages.images.length > 0) {
+          productWithImages.images.forEach(img => {
+            imagesToProcess.push({ imageUrl: img.image_url, imageId: img.image_id, isPrimary: img.is_primary });
+          });
+        }
+
+        // Tạo mảng ảnh với tiền tố và định nghĩa ảnh chính ban đầu
+        const processedImages = imagesToProcess.map(img => ({
+          imageUrl: `http://localhost:5000${img.imageUrl}`,
+          imageId: img.imageId,
+        }));
+        setAllImagesWithPrefix(processedImages);
+
         let initialMainImageUrl = '';
         let initialMainImageId: number | null = null;
-        if (productWithImages.image_url) {
-          initialMainImageUrl = `http://localhost:5000${productWithImages.image_url}`;
-          setMainImageUrl(initialMainImageUrl);
-          initialMainImageId = null;
-          setMainImageId(initialMainImageId);
-        } else if (productWithImages.images && productWithImages.images.length > 0) {
-          const primaryImage = productWithImages.images.find(img => img.is_primary) || productWithImages.images[0];
-          initialMainImageUrl = `http://localhost:5000${primaryImage.image_url}`;
-          setMainImageUrl(initialMainImageUrl);
-          initialMainImageId = primaryImage.image_id;
-          setMainImageId(initialMainImageId);
-        } else {
-          setMainImageUrl('');
-          setMainImageId(null);
+
+        if (processedImages.length > 0) {
+          // Ưu tiên ảnh is_primary hoặc ảnh đầu tiên trong mảng processedImages
+          const primaryImage = processedImages.find(
+            (img, index) =>
+              (productWithImages.images && productWithImages.images[index] && productWithImages.images[index].is_primary && img.imageId === productWithImages.images[index].image_id) ||
+              (img.imageId === null && productWithImages.image_url === img.imageUrl.replace('http://localhost:5000', ''))
+          ) || processedImages[0];
+
+          initialMainImageUrl = primaryImage.imageUrl;
+          initialMainImageId = primaryImage.imageId;
         }
+
+        setMainImageUrl(initialMainImageUrl);
+        setMainImageId(initialMainImageId);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -87,7 +114,7 @@ const ProductDetailPage: React.FC = () => {
 
   const handleThumbnailClick = (clickedImageUrl: string, clickedImageId: number | null) => {
     setMainImageUrl(clickedImageUrl);
-    setMainImageId(clickedImageId); // Giữ nguyên việc set ID
+    setMainImageId(clickedImageId);
   };
 
   const handleAddToCart = async () => {
@@ -99,12 +126,15 @@ const ProductDetailPage: React.FC = () => {
       setShowInactiveAlert(true);
       return;
     }
-
     if (!product || !product.product_id) {
       console.error("Không có thông tin sản phẩm để thêm vào giỏ hàng.");
       return;
     }
-
+    if (quantity < 1) {
+        alert("Số lượng sản phẩm phải lớn hơn 0.");
+        setQuantity(1); // Reset quantity to 1
+        return;
+    }
     try {
       const cartItemData = {
         product_id: product.product_id,
@@ -113,7 +143,7 @@ const ProductDetailPage: React.FC = () => {
       const response = await cartApi.addToCart(cartItemData);
       console.log("Đã thêm vào giỏ hàng:", response.data);
       alert("Đã thêm sản phẩm vào giỏ hàng.");
-      window.location.reload(); // Reload to update cart icon (if any)
+      window.location.reload();
     } catch (error: any) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
       if (error.response && error.response.data && error.response.data.message === "Tài khoản chưa được kích hoạt. Vui lòng xác thực email.") {
@@ -140,9 +170,36 @@ const ProductDetailPage: React.FC = () => {
     navigate('/profile');
   };
 
-  // Function to handle category selection from CategoryTreeNav
   const handleCategorySelect = (categoryId: number) => {
     navigate(`/categories/${categoryId}`);
+  };
+
+  const openImageModal = () => {
+    if (mainImageUrl) {
+      setShowImageModal(true);
+    }
+  };
+
+  const closeImageModal = () => {
+    setShowImageModal(false);
+  };
+
+  const goToPrevImage = () => {
+    const currentIndex = allImagesWithPrefix.findIndex(img => img.imageUrl === mainImageUrl && img.imageId === mainImageId);
+    if (currentIndex > 0) {
+      const prevImage = allImagesWithPrefix[currentIndex - 1];
+      setMainImageUrl(prevImage.imageUrl);
+      setMainImageId(prevImage.imageId);
+    }
+  };
+
+  const goToNextImage = () => {
+    const currentIndex = allImagesWithPrefix.findIndex(img => img.imageUrl === mainImageUrl && img.imageId === mainImageId);
+    if (currentIndex < allImagesWithPrefix.length - 1) {
+      const nextImage = allImagesWithPrefix[currentIndex + 1];
+      setMainImageUrl(nextImage.imageUrl);
+      setMainImageId(nextImage.imageId);
+    }
   };
 
 
@@ -158,15 +215,10 @@ const ProductDetailPage: React.FC = () => {
     return <div className="pdp-not-found">Không tìm thấy sản phẩm.</div>;
   }
 
-  const allImages: { image_url: string; image_id: number | null }[] = [];
-  if (product.image_url) {
-    allImages.push({ image_url: product.image_url, image_id: null });
-  }
-  if (product.images) {
-    product.images.forEach((img) => {
-      allImages.push({ image_url: img.image_url, image_id: img.image_id });
-    });
-  }
+  const currentImageIndex = allImagesWithPrefix.findIndex(img => img.imageUrl === mainImageUrl && img.imageId === mainImageId);
+  const hasPrev = currentImageIndex > 0;
+  const hasNext = currentImageIndex < allImagesWithPrefix.length - 1;
+
 
   return (
     <div className="pdp-content">
@@ -179,21 +231,19 @@ const ProductDetailPage: React.FC = () => {
         <section className="pdp-product-detail-section">
           <div className="pdp-product-main-display-area">
             <div className="pdp-product-images-and-thumbnails">
-              <div className="pdp-product-image-frame">
+              <div className="pdp-product-image-frame" onClick={openImageModal}>
                 <img src={mainImageUrl} alt={product.name} className="pdp-product-image-main" />
               </div>
               <div className="pdp-product-thumbnails">
-                {allImages.map((image) => (
+                {allImagesWithPrefix.map((image) => (
                   <img
-                    key={image.image_id !== null ? image.image_id : image.image_url}
-                    src={`http://localhost:5000${image.image_url}`}
-                    alt={`${product.name} - ${image.image_id || 'main'}`}
+                    key={image.imageId !== null ? image.imageId : image.imageUrl} // Dùng imageUrl nếu imageId là null
+                    src={image.imageUrl}
+                    alt={`${product.name} - ${image.imageId || 'main'}`}
                     className={`pdp-product-image-thumbnail ${
-                      (mainImageUrl === `http://localhost:5000${image.image_url}` && mainImageId === image.image_id) ? 'pdp-active-thumbnail' : ''
+                      image.imageUrl === mainImageUrl && image.imageId === mainImageId ? 'pdp-active-thumbnail' : ''
                     }`}
-                    onClick={() =>
-                      handleThumbnailClick(`http://localhost:5000${image.image_url}`, image.image_id)
-                    }
+                    onClick={() => handleThumbnailClick(image.imageUrl, image.imageId)}
                   />
                 ))}
               </div>
@@ -204,6 +254,12 @@ const ProductDetailPage: React.FC = () => {
                 <h1 className="pdp-product-name-detail">{product.name}</h1>
                 <p className="pdp-product-category-supplier">
                   Danh mục: <Link to={`/categories/${product.category_id}`}>{product.category?.name || 'N/A'}</Link>
+                </p>
+                <p className="pdp-product-origin">
+                  Xuất xứ: {product.origin || 'N/A'}
+                </p>
+                <p className='pdp-product-unit'>
+                  Đơn vị: {product.unit || 'N/A'}
                 </p>
                 <div className="pdp-product-price-detail">
                   {product.discount_price !== null && product.discount_price !== undefined ? (
@@ -276,6 +332,17 @@ const ProductDetailPage: React.FC = () => {
         </div>
       )}
       {numericProductId > 0 && <ProductReviews product_id={numericProductId} />}
+
+      {showImageModal && (
+        <ImageModal
+          imageUrl={mainImageUrl}
+          onClose={closeImageModal}
+          onPrev={goToPrevImage}
+          onNext={goToNextImage}
+          hasPrev={hasPrev}
+          hasNext={hasNext}
+        />
+      )}
     </div>
   );
 };

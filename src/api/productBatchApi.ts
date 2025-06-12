@@ -12,25 +12,25 @@ const productBatchApi = {
     if (productId) {
       params.productId = productId;
     }
-    const response = await axiosClient.get('/productbatch', { params }); // Đúng theo tên bạn nói
+    const response = await axiosClient.get('/productbatch', { params }); 
     return response.data; 
   },
 
   // Lấy lô sản phẩm theo ID
   async getById (id: number): Promise<ProductBatchAttributes> {
-    const response = await axiosClient.get(`/productbatch/${id}`); // Đúng theo tên bạn nói
+    const response = await axiosClient.get(`/productbatch/${id}`); 
     return response.data;
   },
 
   // Cập nhật trạng thái lô sản phẩm
   async updateStatus (id: number, payload: UpdateBatchStatusPayload): Promise<ProductBatchAttributes> {
-    const response = await axiosClient.put(`/productbatch/${id}/status`, payload); // Đúng theo tên bạn nói
+    const response = await axiosClient.put(`/productbatch/${id}/status`, payload); 
     return response.data;
   },
 
   // Điều chỉnh số lượng lô sản phẩm
   async adjustQuantity (id: number, payload: AdjustBatchQuantityPayload): Promise<ProductBatchAttributes> {
-    const response = await axiosClient.put(`/productbatch/${id}/adjust-quantity`, payload); // Đúng theo tên bạn nói
+    const response = await axiosClient.put(`/productbatch/${id}/adjust-quantity`, payload); 
     return response.data;
   },
 
@@ -49,8 +49,8 @@ const productBatchApi = {
 
   // Cập nhật các lô đã hết hạn
   async updateExpired (): Promise<void> {
-    const response = await axiosClient.post('/productbatch/update-expired'); // Đúng theo tên bạn nói
-    return response.data; // Hoặc `return;` nếu backend không trả về gì cụ thể
+    const response = await axiosClient.post('/productbatch/update-expired'); 
+    return response.data; 
   },
 };
 

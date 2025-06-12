@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import authApi from "../api/authApi";
-import "./LoginPage.css"; // Đã đổi sang file CSS mới và riêng cho trang này
-
+import "./LoginPage.css"; 
+import ForgotPasswordModal from "../components/ForgotPasswordModal"; 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
-
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false); // New state for modal
   const handleSignIn = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -45,8 +45,8 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="log-container"> {/* Class tổng */}
-      <div className="log-card"> {/* Thêm một div bọc để tạo hiệu ứng thẻ */}
+    <div className="log-container"> 
+      <div className="log-card"> 
         <h2 className="log-title">Đăng nhập</h2>
         <form onSubmit={handleSignIn} className="log-form">
           <div className="log-form-group">
@@ -81,8 +81,16 @@ const LoginPage: React.FC = () => {
           <p className="log-register-link">
             Chưa có tài khoản? <Link to="/dangky" className="log-link">Đăng ký</Link>
           </p>
+          <p className="log-forgot-password">
+            <Link to="#" onClick={() => setShowForgotPasswordModal(true)} className="log-link">
+              Quên mật khẩu?
+            </Link>
+          </p>
         </form>
-      </div> {/* Kết thúc log-card */}
+      </div>
+      {showForgotPasswordModal && (
+        <ForgotPasswordModal onClose={() => setShowForgotPasswordModal(false)} />
+      )}
     </div>
   );
 };

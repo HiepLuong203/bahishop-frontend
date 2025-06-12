@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Product, ProductInput } from '../../types/product';
 import productApi from '../../api/productApi';
 import categoryApi from '../../api/categoryApi';
-import supplierApi from '../../api/supplierApi'; // Import supplier API
+import supplierApi from '../../api/supplierApi';
 import { Category } from '../../types/category';
-import { Supplier } from '../../types/supplier'; // Import Supplier type
+import { Supplier } from '../../types/supplier';
 import './ProductFormModal.css';
 
 interface ProductFormModalProps {
@@ -31,9 +31,10 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose, o
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]); // State cho nhà cung cấp
-  const [loadingSuppliers, setLoadingSuppliers] = useState(true); // Loading state cho nhà cung cấp
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
+  const [priceError, setPriceError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose, o
         description: product.description || '',
         price: product.price,
         category_id: product.category_id || 0,
-        supplier_id: product.supplier?.supplier_id || null, // Lấy supplier_id từ object supplier
+        supplier_id: product.supplier?.supplier_id || null,
         unit: product.unit || '',
         origin: product.origin || '',
         is_featured: product.is_featured || false,
@@ -85,14 +86,30 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose, o
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+
+    if (name === 'price') {
+      setPriceError(null);
+    }
+    setFormError(null); 
+
     if (type === 'checkbox') {
       setFormData({ ...formData, [name]: (e.target as HTMLInputElement).checked });
     } else if (type === 'number') {
-      setFormData({ ...formData, [name]: value === '' ? null : Number(value) });
+      let numericValue: number | null = null;
+      if (value !== '') {
+        numericValue = Number(value);
+        if (name === 'price' && numericValue < 0) {
+          setPriceError('Giá không thể là số âm.');
+        } else if (name === 'price' && isNaN(numericValue)) { 
+          setPriceError('Giá phải là một số hợp lệ.');
+        }
+      }
+      setFormData({ ...formData, [name]: numericValue });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -108,6 +125,22 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose, o
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
+    setPriceError(null); 
+
+    if (formData.price === null || isNaN(formData.price) || formData.price < 0) {
+      setPriceError('Giá sản phẩm phải là một số không âm hợp lệ.');
+      setFormError('Vui lòng kiểm tra lại thông tin sản phẩm.');
+      return;
+    }
+    if (formData.category_id === 0) {
+      setFormError('Vui lòng chọn một danh mục.');
+      return;
+    }
+    if (!formData.name.trim()) {
+      setFormError('Tên sản phẩm không được để trống.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     const data = new FormData();
@@ -178,9 +211,19 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose, o
           </div>
           <div className="form-group">
             <label htmlFor="price">Giá:</label>
-            <input type="number" id="price" name="price" value={formData.price === null ? '' : formData.price} onChange={handleChange} required />
+            <input
+              type="number"
+              id="price"
+              name="price"
+              value={formData.price === null ? '' : formData.price}
+              onChange={handleChange}
+              min="0" 
+              step="0.01" 
+              required
+            />
+            {priceError && <p className="input-error">{priceError}</p>}
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="unit">Đơn vị:</label>
             <input type="text" id="unit" name="unit" value={formData.unit} onChange={handleChange} />

@@ -23,14 +23,21 @@ const authApi = {
     return axiosClient.get<{
       total_customers: number;
       today_new_customers: number;
-      customers: any[]; // Hoặc định nghĩa interface cụ thể cho User
+      customers: any[]; 
     }>(url);
   },
   async changePassword(data: ChangePasswordPayload) {
     const url = '/users/changepassword'; 
     return axiosClient.post(url, data);
   },
-  // Các API liên quan đến xác thực khác có thể được thêm vào đây
+  async forgotPassword(data: { email: string }) {
+    const url = '/users/forgetpassword';
+    return axiosClient.post(url, data);
+  },
+  async resetPassword(data: { token: string; email: string; newPassword: string }) {
+    const url = '/users/resetpassword';
+    return axiosClient.post(url, data);
+  },
 };
 
 export default authApi;

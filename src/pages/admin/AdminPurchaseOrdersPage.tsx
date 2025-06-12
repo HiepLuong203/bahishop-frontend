@@ -24,7 +24,6 @@ const AdminPurchaseOrdersPage: React.FC = () => {
   const [fromDate, setFromDate] = useState<string | null>(null);
   const [toDate, setToDate] = useState<string | null>(null);
 
-  // --- States for Pagination ---
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(15); 
 
@@ -45,7 +44,7 @@ const AdminPurchaseOrdersPage: React.FC = () => {
       setError(err.response?.data?.message || err.message || 'Lỗi khi tải dữ liệu.');
       setLoading(false);
     }
-  }, []); // useCallback dependency array is empty because it only depends on purchaseOrderApi, supplierApi, productApi which are stable.
+  }, []);
 
   useEffect(() => {
     fetchPurchaseOrders();
@@ -135,14 +134,6 @@ const AdminPurchaseOrdersPage: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
-  if (loading) {
-    return <div className="admin-purchase-orders-page">Đang tải đơn nhập hàng...</div>;
-  }
-
-  if (error) {
-    return <div className="admin-purchase-orders-page">Lỗi: {error}</div>;
-  }
-
   return (
     <div className="admin-purchase-orders-page">
       <h1>Quản lý Đơn nhập hàng</h1>
@@ -169,46 +160,50 @@ const AdminPurchaseOrdersPage: React.FC = () => {
           ) : null}
         </div>
       </div>
-      {purchaseOrders.length > 0 ? (
-        <>
-          <table className="admin-purchase-orders-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nhà cung cấp</th>
-                <th>Ngày đặt hàng</th>
-                <th>Tổng tiền</th>
-                <th>Ghi chú</th>
-                <th className="action-header">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Displaying only current page's orders */}
-              {currentPurchaseOrders.map((order) => (
-                <tr key={order.id}>
-                  <td>{order.id}</td>
-                  <td>{getSupplierName(order.supplier_id)}</td>
-                  <td>{new Date(order.order_date).toLocaleDateString('vi-VN')}</td>
-                  <td>{Number(order.total_amount).toLocaleString('vi-VN')} VNĐ</td>
-                  <td>{order.note || 'Không có'}</td>
-                  <td className="actions-cell">
-                    <button className="admin-button secondary small" onClick={() => handleEditPurchaseOrder(order)}>Sửa</button>
-                    <button className="admin-button info small" onClick={() => handleViewOrderDetails(order.id)}>Chi tiết</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {/* Pagination component */}
-          <Pagination
-            totalItems={purchaseOrders.length}
-            itemsPerPage={itemsPerPage}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </>
+       {loading ? (
+        <div className="admin-message">Đang tải đơn nhập hàng...</div>
+      ) : error ? (
+        <div className="admin-error-message">Lỗi: {error}</div>
       ) : (
-        <p>Không có đơn nhập hàng nào.</p>
+        purchaseOrders.length > 0 ? (
+          <>
+            <table className="admin-purchase-orders-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nhà cung cấp</th>
+                  <th>Ngày đặt hàng</th>
+                  <th>Tổng tiền</th>
+                  <th>Ghi chú</th>
+                  <th className="action-header">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentPurchaseOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td>{order.id}</td>
+                    <td>{getSupplierName(order.supplier_id)}</td>
+                    <td>{new Date(order.order_date).toLocaleDateString('vi-VN')}</td>
+                    <td>{Number(order.total_amount).toLocaleString('vi-VN')} VNĐ</td>
+                    <td>{order.note || 'Không có'}</td>
+                    <td className="actions-cell">
+                      <button className="admin-button secondary small" onClick={() => handleEditPurchaseOrder(order)}>Sửa</button>
+                      <button className="admin-button info small" onClick={() => handleViewOrderDetails(order.id)}>Chi tiết</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Pagination
+              totalItems={purchaseOrders.length}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </>
+        ) : (
+          <p>Không có đơn nhập hàng nào.</p>
+        )
       )}
 
       {showModal && (

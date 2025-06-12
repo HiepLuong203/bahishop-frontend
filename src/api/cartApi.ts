@@ -21,7 +21,6 @@ const cartApi = {
     return axiosClient.put(url, { product_id: productId, quantity });
   }
 
-  // Bạn có thể thêm các API khác như update quantity nếu cần
 };
 
 export default cartApi;

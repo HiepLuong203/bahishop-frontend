@@ -35,15 +35,15 @@ const productApi = {
     const url = '/products';
     return axiosClient.post<Product>(url, data, {
       headers: {
-        'Content-Type': 'multipart/form-data', // Quan trọng khi gửi file
+        'Content-Type': 'multipart/form-data', // gửi file
       },
     });
   },
-  async updateProduct(productId: number, data: FormData) { // Nhận FormData vì có thể có file ảnh
+  async updateProduct(productId: number, data: FormData) { 
     const url = `/products/${productId}`;
     return axiosClient.put<Product>(url, data, {
       headers: {
-        'Content-Type': 'multipart/form-data', // Quan trọng khi gửi file
+        'Content-Type': 'multipart/form-data', 
       },
     });
   },
@@ -51,7 +51,6 @@ const productApi = {
     const url = `/products/${productId}`;
     return axiosClient.delete(url);
   },
-  // ... các hàm khác ...
 };
 
 export default productApi;
