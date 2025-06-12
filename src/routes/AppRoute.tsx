@@ -1,6 +1,6 @@
 // src/routes/AppRouter.tsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route,Navigate } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import MainLayout from "../layout/MainLayout";
 import SearchResultsPage from "../pages/SearchResultsPage"; 
@@ -31,6 +31,7 @@ const AppRouter = () => {
   return (  
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/trangchu" replace />} />
         <Route path="/trangchu" element={
             <MainLayout>
               <HomePage />
