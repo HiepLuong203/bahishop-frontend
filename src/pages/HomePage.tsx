@@ -60,7 +60,7 @@ const HomePage: React.FC = () => {
           {featuredProducts.length > 0 ? (
             featuredProducts.map((product) => (
               <div key={product.product_id} className="hp-product-card">
-                {product.is_featured && <div className="hp-best-sale-badge hp-badge">BEST SELLER</div>}
+                {product.is_featured && <div className="hp-best-sale-badge hp-badge">BÁN CHẠY</div>}
                 {product.image_url && (
                   <Link to={`/product/${product.product_id}`}>
                     <img src={`http://localhost:5000${product.image_url}`} alt={product.name}
@@ -92,7 +92,7 @@ const HomePage: React.FC = () => {
           {promotionalProducts.length > 0 ? (
             promotionalProducts.map((product) => (
               <div key={product.product_id} className="hp-product-card">
-                {product.discount_price !== null && product.discount_price !== undefined && <div className="hp-sale-badge hp-badge">SALE</div>}
+                {product.discount_price !== null && product.discount_price !== undefined && <div className="hp-sale-badge hp-badge">KHUYẾN MÃI</div>}
                 {product.image_url && (
                   <Link to={`/product/${product.product_id}`}>
                     <img src={`http://localhost:5000${product.image_url}`} alt={product.name}
@@ -118,7 +118,7 @@ const HomePage: React.FC = () => {
           {newProducts.length > 0 ? (
             newProducts.map((product) => (
               <div key={product.product_id} className="hp-product-card">
-                {product.is_new && <div className="hp-new-badge hp-badge">NEW</div>}
+                {product.is_new && <div className="hp-new-badge hp-badge">MỚI</div>}
                 {product.image_url && (
                   <Link to={`/product/${product.product_id}`}>
                     <img src={`http://localhost:5000${product.image_url}`} alt={product.name}

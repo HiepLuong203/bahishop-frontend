@@ -6,8 +6,7 @@ import categoryApi from "../api/categoryApi";
 import productApi from "../api/productApi";
 import './ProductPage.css';
 import Pagination from "../components/Pagination";
-import CategoryTreeNav from "../components/CategoryTreeNav"; 
-
+import CategoryTreeNav from "../components/CategoryTreeNav";
 
 const ProductPage: React.FC = () => {
   const [allFlatCategories, setAllFlatCategories] = useState<Category[]>([]);
@@ -15,8 +14,13 @@ const ProductPage: React.FC = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 16;
   const [priceFilter, setPriceFilter] = useState<PriceFilter>({ min: null, max: null });
+  const [sortOption, setSortOption] = useState<{
+    sortBy: 'price' | 'name' | 'newest' | 'promotion' | 'featured';
+    sortOrder: 'ASC' | 'DESC';
+  }>({ sortBy: 'name', sortOrder: 'ASC' });
+  const [loading, setLoading] = useState(false);
+  const productsPerPage = 16;
   const navigate = useNavigate();
 
   const getAllCategoryIdsInBranch = useCallback((categoryId: number, categories: Category[]): number[] => {
@@ -31,21 +35,26 @@ const ProductPage: React.FC = () => {
   useEffect(() => {
     const fetchAllCategoriesFlat = async () => {
       try {
+        setLoading(true);
         const response = await categoryApi.getAll();
         setAllFlatCategories(response.data);
       } catch (error) {
         console.error("Lỗi khi tải danh mục phẳng:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchInitialProducts = async () => {
       try {
-        const response = await productApi.getAll();
-        const activeProducts = response.data.filter((product) => product.is_active);
-        setProducts(activeProducts);
-        setFilteredProducts(activeProducts);
+        setLoading(true);
+        const response = await productApi.filterAndSortProducts({ isActive: true });
+        setProducts(response.data);
+        setFilteredProducts(response.data);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -54,39 +63,86 @@ const ProductPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const applyCategoryFilter = async () => {
-      if (selectedCategory !== null) {
-        const categoryIdsToFetch = getAllCategoryIdsInBranch(selectedCategory, allFlatCategories);
-        let allFetchedProducts: Product[] = [];
+    const applyFilters = async () => {
+  try {
+    setLoading(true);
+    let productsToFilter: Product[] = [];
 
-        for (const id of categoryIdsToFetch) {
-          try {
-            const response = await productApi.getByCategory(id);
-            allFetchedProducts.push(...response.data);
-          } catch (subCatError) {
-            console.warn(`Không tìm thấy sản phẩm cho danh mục con ID ${id} hoặc lỗi:`, subCatError);
-          }
+    if (selectedCategory !== null) {
+      const categoryIdsToFetch = getAllCategoryIdsInBranch(selectedCategory, allFlatCategories);
+      const allProducts: Product[] = [];
+
+      for (const id of categoryIdsToFetch) {
+        try {
+          const response = await productApi.getByCategory(id);
+          allProducts.push(...response.data);
+        } catch (subCatError) {
+          console.warn(`Không tìm thấy sản phẩm cho danh mục con ID ${id}`, subCatError);
         }
-        const uniqueActiveProducts = Array.from(new Set(allFetchedProducts.map(p => p.product_id)))
-          .map(id => allFetchedProducts.find(p => p.product_id === id)!)
-          .filter((product) => product.is_active);
-
-        setFilteredProducts(uniqueActiveProducts);
-      } else {
-        setFilteredProducts(products);
       }
-      setCurrentPage(1);
-    };
+
+      // Lọc trùng + lọc is_active
+      const uniqueProducts = Array.from(new Map(allProducts.map(p => [p.product_id, p])).values())
+        .filter((p) => p.is_active);
+
+      // Áp dụng lọc theo giá nếu có
+      if (priceFilter.min !== null || priceFilter.max !== null) {
+        productsToFilter = uniqueProducts.filter(p => {
+          const price = p.discount_price ?? p.price;
+          return (
+            (priceFilter.min === null || price >= priceFilter.min) &&
+            (priceFilter.max === null || price <= priceFilter.max)
+          );
+        });
+      } else {
+        productsToFilter = uniqueProducts;
+      }
+
+      // Áp dụng sắp xếp
+      productsToFilter.sort((a, b) => {
+        const getCompareValue = (p: Product) => {
+          switch (sortOption.sortBy) {
+            case "price": return p.discount_price ?? p.price;
+            case "name": return p.name;
+            case "promotion": return p.discount_price !== null ? 1 : 0;
+            case "newest": return p.is_new ? 1 : 0;
+            case "featured": return p.is_featured ? 1 : 0;
+          }
+        };
+        const valA = getCompareValue(a);
+        const valB = getCompareValue(b);
+        if (valA < valB) return sortOption.sortOrder === "ASC" ? -1 : 1;
+        if (valA > valB) return sortOption.sortOrder === "ASC" ? 1 : -1;
+        return 0;
+      });
+
+    } else {
+      const response = await productApi.filterAndSortProducts({
+      ...(priceFilter.min !== null && { minPrice: priceFilter.min }),
+      ...(priceFilter.max !== null && { maxPrice: priceFilter.max }),
+      sortBy: sortOption.sortBy,
+      sortOrder: sortOption.sortOrder,
+      isActive: true,
+    });
+    productsToFilter = response.data;
+
+    }
+
+    setFilteredProducts(productsToFilter);
+    setCurrentPage(1);
+  } catch (error) {
+    console.error("Lỗi khi áp dụng bộ lọc:", error);
+    setFilteredProducts([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     if (allFlatCategories.length > 0 || selectedCategory === null) {
-      applyCategoryFilter();
+      applyFilters();
     }
-  }, [selectedCategory, products, allFlatCategories, getAllCategoryIdsInBranch]);
-
-  const totalItems = filteredProducts.length;
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  }, [selectedCategory, priceFilter, sortOption, allFlatCategories, getAllCategoryIdsInBranch]);
 
   const handleCategorySelectFromNav = (categoryId: number | null) => {
     setSelectedCategory(categoryId);
@@ -99,24 +155,18 @@ const ProductPage: React.FC = () => {
     }
   };
 
-  const handlePriceFilterChange = async () => {
+  const handlePriceFilterChange = () => {
     setSelectedCategory(null);
     setCurrentPage(1);
+  };
 
-    const minPrice: number = priceFilter.min === null ? 0 : priceFilter.min;
-    const maxPrice: number = priceFilter.max === null ? Number.MAX_SAFE_INTEGER : priceFilter.max;
-
-    console.log("Filtering by price - Min:", minPrice, "Max:", maxPrice);
-
-    try {
-      const response = await productApi.filterByPrice(minPrice, maxPrice);
-      const activeAndPriceFiltered = response.data.filter(product => product.is_active);
-      setFilteredProducts(activeAndPriceFiltered);
-      console.log("Filtered products updated:", activeAndPriceFiltered);
-    } catch (error) {
-      console.error("Lỗi khi lọc sản phẩm theo giá:", error);
-      setFilteredProducts([]);
-    }
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const [sortBy, sortOrder] = e.target.value.split('-') as [
+      'price' | 'name' | 'newest' | 'promotion' | 'featured',
+      'ASC' | 'DESC'
+    ];
+    setSortOption({ sortBy, sortOrder });
+    setCurrentPage(1);
   };
 
   const handleClearPriceFilter = () => {
@@ -130,6 +180,11 @@ const ProductPage: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
+  const totalItems = filteredProducts.length;
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
   const currentCategoryName = selectedCategory
     ? allFlatCategories.find((cat) => cat.category_id === selectedCategory)?.name
     : null;
@@ -137,7 +192,7 @@ const ProductPage: React.FC = () => {
   return (
     <div className="pp-content">
       <section className="pp-main-content">
-        <aside className="cp-product-categories"> 
+        <aside className="cp-product-categories">
           <CategoryTreeNav
             selectedCategoryId={selectedCategory}
             onCategorySelect={handleCategorySelectFromNav}
@@ -164,17 +219,39 @@ const ProductPage: React.FC = () => {
         </aside>
 
         <section className="pp-product-list">
-          <h2>
-            {selectedCategory
-              ? `Sản phẩm thuộc danh mục: ${currentCategoryName}`
-              : priceFilter.min !== null || priceFilter.max !== null
-                ? `Sản phẩm có giá từ ${priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN')+' đ' : '0 đ'} đến ${priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN')+' đ' : 'bất kỳ'}`
+          <div className="pp-filter-controls">
+            <h2>
+              {selectedCategory
+                ? `Sản phẩm thuộc danh mục: ${currentCategoryName}`
+                : priceFilter.min !== null || priceFilter.max !== null
+                ? `Sản phẩm có giá từ ${priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN') + ' đ' : '0 đ'} đến ${priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN') + ' đ' : 'bất kỳ'}`
                 : 'Tất cả sản phẩm'}
-          </h2>
+            </h2>
+            <div className="pp-sort-controls">
+              <label htmlFor="sortOption">Sắp xếp: </label>
+              <select id="sortOption" onChange={handleSortChange} value={`${sortOption.sortBy}-${sortOption.sortOrder}`}>
+                <option value="name-ASC">Tên (A-Z)</option>
+                <option value="name-DESC">Tên (Z-A)</option>
+                <option value="price-ASC">Giá (Thấp - Cao)</option>
+                <option value="price-DESC">Giá (Cao - Thấp)</option>
+                <option value="newest-DESC">Mới</option>
+                <option value="promotion-DESC">Khuyến mãi</option>
+                <option value="featured-DESC">Bán chạy</option>
+              </select>
+            </div>
+          </div>
+          {loading && <p className="pp-loading-message">Đang tải...</p>}
           <div className="pp-products-grid">
             {currentProducts.length > 0 ? (
               currentProducts.map((product) => (
                 <div key={product.product_id} className="pp-product-card">
+                  <div className="pp-product-badges">
+                    {product.is_new && <span className="pp-badge pp-new-badge">MỚI</span>}
+                    {product.is_featured && <span className="pp-badge pp-best-sale-badge">BÁN CHẠY</span>}
+                    {product.discount_price !== null && product.discount_price !== undefined && (
+                      <span className="pp-badge pp-sale-badge">KHUYẾN MÃI</span>
+                    )}
+                  </div>
                   {product.image_url && (
                     <Link to={`/product/${product.product_id}`}>
                       <img
@@ -186,8 +263,7 @@ const ProductPage: React.FC = () => {
                   )}
                   <h3>{product.name}</h3>
                   <div className="pp-price-container">
-                    {product.discount_price !== null &&
-                    product.discount_price !== undefined ? (
+                    {product.discount_price !== null && product.discount_price !== undefined ? (
                       <>
                         <p className="pp-original-price">
                           Giá: {Number(product.price).toLocaleString('vi-VN')} đ
@@ -209,7 +285,7 @@ const ProductPage: React.FC = () => {
                 Không có sản phẩm nào
                 {selectedCategory ? ` trong danh mục "${currentCategoryName}"` : ''}
                 {priceFilter.min !== null || priceFilter.max !== null
-                  ? ` trong khoảng giá từ ${priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN')+' đ' : '0 đ'} đến ${priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN')+' đ' : 'bất kỳ'}`
+                  ? ` trong khoảng giá từ ${priceFilter.min ? Number(priceFilter.min).toLocaleString('vi-VN') + ' đ' : '0 đ'} đến ${priceFilter.max ? Number(priceFilter.max).toLocaleString('vi-VN') + ' đ' : 'bất kỳ'}`
                   : ''}.
               </p>
             )}
