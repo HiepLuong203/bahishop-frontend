@@ -6,7 +6,7 @@ import { ProductBatchAttributes, ProductBatchStatus, ProductBatchStatusEnum } fr
 import { Product } from '../../types/product';
 import ProductBatchFormModal from '../../components/admin/ProductBatchFormModal';
 import ProductBatchDetailsModal from '../../components/admin/ProductBatchDetailsModal';
-import ConfirmationModal from '../../components/admin/ConfirmationModal'; // Giả sử bạn có component này
+import ConfirmationModal from '../../components/admin/ConfirmationModal'; 
 import Pagination from '../../components/Pagination'; 
 import './ProductBatchManagementPage.css';
 

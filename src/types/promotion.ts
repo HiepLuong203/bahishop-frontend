@@ -3,7 +3,7 @@ export interface Promotion {
   promotion_id: number;
   name: string;
   description?: string | null;
-  discount_type: 'percentage' | 'fixed'; // Ví dụ: loại giảm giá
+  discount_type: 'percentage' | 'fixed_amount'; 
   discount_value: number;
   start_date: string; // Hoặc Date nếu bạn muốn xử lý Date object
   end_date: string;   // Hoặc Date
@@ -15,7 +15,7 @@ export interface Promotion {
 export interface PromotionInput {
   name: string;
   description?: string | null;
-  discount_type: 'percentage' | 'fixed';
+  discount_type: 'percentage' | 'fixed_amount';
   discount_value: number;
   start_date: string;
   end_date: string;

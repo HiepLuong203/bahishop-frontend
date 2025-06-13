@@ -47,7 +47,6 @@ const AdminCategoriesPage: React.FC = () => {
       try {
         await categoryApi.deleteCategory(categoryId);
         alert('Danh mục đã được xóa thành công!');
-        // Sau khi xóa, chúng ta sẽ tải lại danh sách
         fetchCategories();
         // Cần đảm bảo trang hiện tại vẫn hợp lệ sau khi xóa một item
         // Nếu trang hiện tại không còn item nào, quay về trang trước
