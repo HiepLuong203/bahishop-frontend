@@ -260,6 +260,75 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   height: fit-content; /* Đảm bảo sidebar không chiếm toàn bộ chiều cao nếu nội dung ít */
 }
+.pp-filter-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pp-sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pp-sort-controls label {
+  font-size: 1.1em;
+  color: #333;
+}
+
+.pp-sort-controls select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.pp-loading-message {
+  text-align: center;
+  font-size: 1.2em;
+  color: #555;
+  margin: 20px 0;
+}
+.pp-product-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10;
+}
+
+.pp-badge {
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+}
+
+.pp-new-badge {
+  background-color: #007bff; /* Blue for featured, matching HomePage */
+}
+
+.pp-best-sale-badge {
+  background-color: #28a745; /* Green for new, matching HomePage */
+
+}
+
+.pp-sale-badge {
+  background-color: #e44d26; /* Red for promotion, matching HomePage */
+}
+
+/* Ensure product card supports badge positioning */
+.pp-product-card {
+  position: relative;
+}
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .pp-main-content {

@@ -267,7 +267,42 @@
   color: #dc3545; /* Màu đỏ cho thông báo lỗi */
 }
 
+.cp-product-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10;
+}
 
+.cp-badge {
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+}
+
+.cp-new-badge {
+  background-color: #007bff; /* Blue for featured, matching HomePage */
+}
+
+.cp-best-sale-badge {
+  background-color: #28a745; /* Green for new, matching HomePage */
+
+}
+
+.cp-sale-badge {
+  background-color: #e44d26; /* Red for promotion, matching HomePage */
+}
+
+/* Ensure product card supports badge positioning */
+.cp-product-card {
+  position: relative;
+}
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .cp-main-content {

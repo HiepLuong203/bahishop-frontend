@@ -241,7 +241,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose, o
           </div>
           <div className="form-group checkbox-group">
             <input type="checkbox" id="is_featured" name="is_featured" checked={formData.is_featured} onChange={handleChange} />
-            <label htmlFor="is_featured">Nổi bật</label>
+            <label htmlFor="is_featured">Bán chạy</label>
           </div>
           <div className="form-group checkbox-group">
             <input type="checkbox" id="is_active" name="is_active" checked={formData.is_active} onChange={handleChange} />

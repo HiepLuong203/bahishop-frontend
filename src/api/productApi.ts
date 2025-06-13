@@ -51,6 +51,30 @@ const productApi = {
     const url = `/products/${productId}`;
     return axiosClient.delete(url);
   },
+  async filterAndSortProducts({
+    minPrice,
+    maxPrice,
+    sortBy = 'name',
+    sortOrder = 'ASC',
+    isActive = true,
+  }: {
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: 'price' | 'name' | 'newest' | 'promotion' | 'featured';
+    sortOrder?: 'ASC' | 'DESC';
+    isActive?: boolean;
+  }) {
+    const params = new URLSearchParams();
+    if (minPrice !== undefined) params.append('minPrice', minPrice.toString());
+    if (maxPrice !== undefined) params.append('maxPrice', maxPrice.toString());
+    params.append('sortBy', sortBy);
+    params.append('sortOrder', sortOrder);
+    params.append('isActive', String(isActive));
+
+    const url = `/products/filter-and-sort?${params.toString()}`;
+    return axiosClient.get<Product[]>(url);
+
+  },
 };
 
 export default productApi;
