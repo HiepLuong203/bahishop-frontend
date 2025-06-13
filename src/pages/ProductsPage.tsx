@@ -85,7 +85,6 @@ const ProductPage: React.FC = () => {
       const uniqueProducts = Array.from(new Map(allProducts.map(p => [p.product_id, p])).values())
         .filter((p) => p.is_active);
 
-      // Áp dụng lọc theo giá nếu có
       if (priceFilter.min !== null || priceFilter.max !== null) {
         productsToFilter = uniqueProducts.filter(p => {
           const price = p.discount_price ?? p.price;

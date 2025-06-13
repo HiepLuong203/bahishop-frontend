@@ -18,7 +18,6 @@ const CategoryProductsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [priceFilter, setPriceFilter] = useState<PriceFilter>({ min: null, max: null });
 
-  // Helper to get all category IDs including subcategories for a given parent ID
   const getAllCategoryIdsInBranch = useCallback((categoryId: number, categories: Category[]): number[] => {
     const ids: number[] = [categoryId];
     const directChildren = categories.filter(cat => cat.parent_id === categoryId);
@@ -125,13 +124,9 @@ const CategoryProductsPage: React.FC = () => {
     <div className="cp-content">
       <section className="cp-main-content">
         <section className="cp-product-categories">
-          {/* SỬ DỤNG COMPONENT MỚI Ở ĐÂY */}
           <CategoryTreeNav
             selectedCategoryId={selectedCategory}
             onCategorySelect={(catId) => {
-              // Khi một danh mục được chọn từ CategoryTreeNav
-              // Chúng ta điều hướng URL để kích hoạt lại useEffect dựa trên categoryId param
-              // Hoặc bạn có thể gọi trực tiếp fetchProductsForSelectedCategory(catId)
               window.history.pushState({}, '', `/categories/${catId}`);
               setSelectedCategory(catId); // Cập nhật state để CategoryTreeNav highlight đúng
               fetchProductsForSelectedCategory(catId); // Tải sản phẩm cho danh mục mới
@@ -196,6 +191,13 @@ const CategoryProductsPage: React.FC = () => {
                       />
                     </Link>
                   )}
+                   <div className="cp-product-badges">
+                    {product.is_new && <span className="cp-badge cp-new-badge">MỚI</span>}
+                    {product.is_featured && <span className="cp-badge cp-best-sale-badge">BÁN CHẠY</span>}
+                    {(product.discount_price !== null && product.discount_price !== undefined) && (
+                      <span className="cp-badge cp-sale-badge">KHUYẾN MÃI</span>
+                    )}
+                  </div>
                   <h3>{product.name}</h3>
                   <div className="cp-price-container">
                     {product.discount_price !== null &&
