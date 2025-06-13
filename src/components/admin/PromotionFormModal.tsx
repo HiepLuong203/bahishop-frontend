@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Promotion, PromotionInput } from '../../types/promotion';
 import promotionApi from '../../api/promotionApi';
-import './PromotionFormModal.css'; // Đường dẫn đến file CSS mới
+import './PromotionFormModal.css'; 
 
 interface PromotionFormModalProps {
   promotion: Promotion | null;
@@ -66,7 +66,7 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ promotion, onCl
           setIsSubmitting(false);
           return;
       }
-      if (formData.discount_type === 'fixed' && formData.discount_value < 0) {
+      if (formData.discount_type === 'fixed_amount' && formData.discount_value < 0) {
           setFormError('Giá trị giảm cố định không thể âm.');
           setIsSubmitting(false);
           return;
@@ -89,11 +89,11 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ promotion, onCl
   };
 
   return (
-    <div className="promo-form-overlay"> {/* Đã đổi tên class */}
-      <div className="promo-form-content"> {/* Đã đổi tên class */}
-        <h2 className="promo-form-title">{promotion ? 'Chỉnh sửa Khuyến mãi' : 'Thêm Khuyến mãi mới'}</h2> {/* Thêm class cho tiêu đề */}
+    <div className="promo-form-overlay"> 
+      <div className="promo-form-content"> 
+        <h2 className="promo-form-title">{promotion ? 'Chỉnh sửa Khuyến mãi' : 'Thêm Khuyến mãi mới'}</h2> 
         <form onSubmit={handleSubmit}>
-          <div className="promo-form-group"> {/* Đã đổi tên class */}
+          <div className="promo-form-group">
             <label htmlFor="name">Tên Khuyến mãi:</label>
             <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />
           </div>
@@ -105,7 +105,7 @@ const PromotionFormModal: React.FC<PromotionFormModalProps> = ({ promotion, onCl
             <label htmlFor="discount_type">Loại giảm giá:</label>
             <select id="discount_type" name="discount_type" value={formData.discount_type} onChange={handleChange}>
               <option value="percentage">Phần trăm</option>
-              <option value="fixed">Cố định</option>
+              <option value="fixed_amount">Cố định</option>
             </select>
           </div>
           <div className="promo-form-group"> {/* Đã đổi tên class */}
