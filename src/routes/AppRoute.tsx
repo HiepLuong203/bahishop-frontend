@@ -27,6 +27,9 @@ import AdminProductImagesPage from "../pages/admin/AdminProductImagesPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
 import ProductBatchManagementPage from '../pages/admin/ProductBatchManagementPage';
 import RevenuePage from '../pages/admin/RevenuePage'; 
+import PaymentPolicyPage from "../pages/PaymentPolicyPage"; 
+import ObligationPolicyPage from "../pages/ObligationPolicyPage";
+import ShippingPolicyPage from "../pages/ShippingPolicyPage"; 
 const AppRouter = () => {
   return (  
     <Router>
@@ -122,11 +125,29 @@ const AppRouter = () => {
             </MainLayout>
           }
         />
-         <Route path="/product/filter/price" element={ // Add this route
+        <Route path="/product/filter/price" element={ // Add this route
           <MainLayout>
             <ProductDetailPage />
           </MainLayout>
         }
+        />
+        <Route path="/chinh-sach-van-chuyen" element={
+          <MainLayout>
+            <ShippingPolicyPage />
+          </MainLayout>
+        }
+        />
+        <Route path="/chinh-sach-thanh-toan" element={
+            <MainLayout>
+              <PaymentPolicyPage />
+            </MainLayout>
+          }
+        />
+        <Route path="/nghia-vu-nguoi-mua-nguoi-ban" element={
+            <MainLayout>
+              <ObligationPolicyPage />
+            </MainLayout>
+          }
         />
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<DashboardPage />} />

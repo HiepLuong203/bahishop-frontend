@@ -19,6 +19,8 @@ body {
   justify-content: space-around;
   width: 100%; /* Để các phần tử con có thể dàn đều */
   margin-bottom: 20px; /* Khoảng cách giữa phần trên và bản quyền */
+  margin-left: 300px;
+  margin-right: 300px;
 }
 
 .footer-info,
