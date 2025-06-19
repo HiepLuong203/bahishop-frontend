@@ -196,7 +196,7 @@ const RevenuePage: React.FC = () => {
 
         {/* BIỂU ĐỒ ĐƯỜNG DOANH THU XU HƯỚNG */}
         <div className="chart-section full-width">
-          <h2>Xu hướng Doanh thu theo {trendInterval === 'day' ? 'Ngày' : trendInterval === 'month' ? 'Tháng' : 'Năm'}</h2>
+          <h2> Doanh thu theo {trendInterval === 'day' ? 'Ngày' : trendInterval === 'month' ? 'Tháng' : 'Năm'}</h2>
           <div className="chart-filter-group">
             <label>
               Từ ngày:
@@ -237,7 +237,7 @@ const RevenuePage: React.FC = () => {
             <div className="chart-no-data">Không có dữ liệu xu hướng doanh thu trong khoảng thời gian đã chọn.</div>
           ) : (
             <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={revenueTrendData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <LineChart data={revenueTrendData} margin={{ top: 5, right: 30, left: 60, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="label" /> {/* ĐÃ SỬA: dataKey khớp với 'label' từ backend */}
                 <YAxis tickFormatter={(value) => formatCurrency(value)} />

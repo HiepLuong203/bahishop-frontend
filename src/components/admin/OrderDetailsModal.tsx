@@ -18,6 +18,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onClose })
           <p><strong>Phương thức thanh toán:</strong> {order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản ngân hàng'}</p>
           <p><strong>Trạng thái thanh toán:</strong> {order.payment_status}</p>
           {order.notes && <p><strong>Ghi chú:</strong> {order.notes}</p>}
+          <p><strong>Ngày cập nhật trạng thái:</strong> {new Date(order.updatedAt).toLocaleDateString('vi-VN')}</p>
         </div>
 
         <h3>Sản phẩm trong đơn hàng:</h3>

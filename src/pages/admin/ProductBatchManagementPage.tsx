@@ -274,6 +274,7 @@ const ProductBatchManagementPage: React.FC = () => {
                     <th>Sản phẩm</th>
                     <th>Mã lô</th>
                     <th>Số lượng</th>
+                    <th>Đơn vị</th>
                     <th>Đơn giá nhập</th>
                     <th>Ngày SX</th>
                     <th>Hạn sử dụng</th>
@@ -288,7 +289,8 @@ const ProductBatchManagementPage: React.FC = () => {
                       <td>{batch.batch_id}</td>
                       <td>{batch.product?.name || 'N/A'}</td>
                       <td>{batch.batch_code}</td>
-                      <td>{batch.quantity} {batch.product?.unit || ''}</td>
+                      <td>{batch.quantity}</td>
+                      <td>{batch.product?.unit || 'N/A'}</td>
                       <td>{Number(batch.import_price).toLocaleString('vi-VN')} VNĐ</td>
                       <td>{batch.manufacture_date ? new Date(batch.manufacture_date).toLocaleDateString('vi-VN') : 'N/A'}</td>
                       <td>{new Date(batch.expiry_date).toLocaleDateString('vi-VN')}</td>

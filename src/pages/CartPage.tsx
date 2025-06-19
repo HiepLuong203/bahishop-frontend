@@ -107,6 +107,7 @@ const CartPage: React.FC = () => {
             <th className="cp-table-header">Sản phẩm</th>
             <th className="cp-table-header">Giá</th>
             <th className="cp-table-header">Số lượng</th>
+            <th className="cp-unit"> Đơn vị</th>
             <th className="cp-table-header">Tổng tiền</th>
             <th className="cp-table-header"></th>
             <th className="cp-table-header"></th>
@@ -145,6 +146,9 @@ const CartPage: React.FC = () => {
                   }}
                   className="cp-cart-quantity-input"
                 />
+              </td>
+              <td className="cp-price-cell">
+                {item.product.unit ? item.product.unit : 'Cái'}
               </td>
               <td className="cp-item-total-cell">{Number(calculateItemTotal(item)).toLocaleString('vi-VN')} đ</td>
               <td className="cp-action-buttons-cell">

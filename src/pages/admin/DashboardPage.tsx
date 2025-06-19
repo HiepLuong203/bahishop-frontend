@@ -153,34 +153,31 @@ const DashboardPage: React.FC = () => {
         
       </div>
 
-      {/* KHỐI BIỂU ĐỒ RIÊNG BIỆT */}
-      <div className="chart-container"> {/* Thêm một container mới cho các biểu đồ */}
-        {/* BIỂU ĐỒ CỘT TỔNG QUAN DOANH THU & CHI PHÍ - DI CHUYỂN XUỐNG DƯỚI */}
-<div className="chart-section dashboard-summary-chart">
-    <h2>Tổng quan Doanh thu & Chi phí (6 tháng gần nhất)</h2>
-    {revenueSummary ? (
-        <ResponsiveContainer width="100%" height={350}>
-            {/* Đảm bảo chỉ có MỘT con duy nhất ở đây */}
-            <BarChart data={summaryChartData} margin={{ top: 5, right: 30, left: 60, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis tickFormatter={formatCurrency} />
-                <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                <Bar dataKey="value" onClick={(data, index) => navigate(summaryChartData[index].link)}>
-                    {
-                        summaryChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} cursor="pointer" />
-                        ))
-                    }
-                </Bar>
-            </BarChart>
-        </ResponsiveContainer>
-    ) : (
-        <div className="chart-loading-state">Đang tải dữ liệu tổng quan...</div>
-    )}
-</div>
-
-        {/* Biểu đồ đường kẻ đã được bỏ đi */}
+      <div className="chart-container"> 
+        {/* BIỂU ĐỒ CỘT TỔNG QUAN DOANH THU & CHI PHÍ */}
+        <div className="chart-section dashboard-summary-chart">
+            <h2>Tổng quan Doanh thu & Chi phí (6 tháng gần nhất)</h2>
+            {revenueSummary ? (
+                <ResponsiveContainer width="100%" height={350}>
+                    {/* Đảm bảo chỉ có MỘT con duy nhất ở đây */}
+                    <BarChart data={summaryChartData} margin={{ top: 5, right: 30, left: 60, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis tickFormatter={formatCurrency} />
+                        <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                        <Bar dataKey="value" onClick={(data, index) => navigate(summaryChartData[index].link)}>
+                            {
+                                summaryChartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} cursor="pointer" />
+                                ))
+                            }
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+            ) : (
+                <div className="chart-loading-state">Đang tải dữ liệu tổng quan...</div>
+            )}
+        </div>
       </div>
     </div>
   );
